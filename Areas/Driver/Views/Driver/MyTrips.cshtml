@@ -1,0 +1,315 @@
+﻿@model IEnumerable<SharavaniTours.Models.Trip>
+
+@{
+    ViewData["Title"] = "My Assignments";
+}
+
+<style>
+    /* Consistent Table Styling */
+    .table-glass {
+        color: #e2e8f0;
+        vertical-align: middle;
+        background: rgba(238, 238, 238, 0.07);
+    }
+
+        .table-glass thead th {
+            background: linear-gradient(180deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.9) 100%);
+            color: #3b82f6;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 1px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.05);
+            padding: 15px;
+        }
+
+        .table-glass td {
+            padding: 18px 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            background: transparent;
+        }
+
+    /* Driver Action Buttons */
+    .driver-btn {
+        padding: 8px 20px;
+        border-radius: 8px;
+        font-weight: 700;
+        text-transform: uppercase;
+        font-size: 0.8rem;
+        letter-spacing: 0.5px;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        text-decoration: none !important;
+        border: none;
+        cursor: pointer;
+    }
+
+    .btn-start {
+        background: #10b981;
+        color: white;
+        box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+    }
+
+    .btn-end {
+        background: #ef4444;
+        color: white;
+        box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+    }
+
+    .btn-invoice {
+        background: rgba(59, 130, 246, 0.1);
+        color: #3b82f6;
+        border: 1px solid rgba(59, 130, 246, 0.3);
+    }
+
+    /* --- CRITICAL MODAL FIXES --- */
+    .modal {
+        background: rgba(0, 0, 0, 0.5); /* Semi-transparent overlay */
+        z-index: 9999 !important; /* Force to top */
+    }
+
+    /* Ensure the modal is above EVERYTHING else */
+    #startModal, #endModal {
+        z-index: 99999 !important;
+    }
+
+    .modal-backdrop {
+        z-index: 99998 !important;
+        }
+
+    .modal-content-glass {
+        position: relative;
+        z-index: 100000 !important;
+        pointer-events: auto !important;
+        background:#333;
+    }
+    /* ---------------------------- */
+
+    .modal-header {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        background: rgba(255, 255, 255, 0.03);
+    }
+
+    .modal-footer {
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .form-control-glass {
+        background: rgba(15, 23, 42, 0.8) !important;
+        border: 1px solid rgba(59, 130, 246, 0.5) !important;
+        color: white !important;
+        border-radius: 8px;
+        padding: 12px;
+    }
+
+    .text-slate-light {
+        color: #cbd5e1 !important;
+    }
+</style>
+
+<div class="mb-4">
+    <h2 class="fw-800 mb-1" style="color: #fff;">My Schedules</h2>
+    <p class="text-slate-light mb-0">View and manage your active duty assignments.</p>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-glass">
+        <thead>
+            <tr>
+                <th>Client Details</th>
+                <th>Trip Status</th>
+                <th class="text-end">Mission Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var t in Model)
+            {
+                <tr>
+                    <td>
+                        <div class="d-flex align-items-center">
+                            <div class="client-icon me-3 d-none d-md-block">
+                                <i class="bi bi-person-badge fs-4 text-primary"></i>
+                            </div>
+                            <div>
+                                <div class="fw-bold text-white">@t.Client.Name</div>
+                                <small class="text-slate-light">Code: @t.ItineraryCode</small>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        @if (t.Status == "Pending")
+                        {
+                            <span class="text-warning fw-bold"><i class="bi bi-clock-history me-1"></i> @t.Status</span>
+                        }
+                        else if (t.Status == "Running")
+                        {
+                            <span class="text-info fw-bold"><i class="bi bi-geo-alt-fill me-1"></i> @t.Status</span>
+                        }
+                        else
+                        {
+                            <span class="text-success fw-bold"><i class="bi bi-check-circle-fill me-1"></i> @t.Status</span>
+                        }
+                    </td>
+                    <td class="text-end">
+                        @if (t.Status == "Pending")
+                        {
+                            <button type="button" class="driver-btn btn-start" onclick="openStartModal('@t.Id', '@t.ItineraryCode')">
+                                <i class="bi bi-play-fill me-1"></i> Start Trip
+                            </button>
+                        }
+                        else if (t.Status == "Running")
+                        {
+                            <button type="button" class="driver-btn btn-end"
+                                    onclick="openEndModal('@t.Id', '@t.ItineraryCode', @(t.DutySlip?.StartKM ?? 0))">
+                                <i class="bi bi-stop-fill me-1"></i> End Trip
+                            </button>
+                        }
+                        else
+                        {
+                            <a href="/Driver/Driver/Invoice/@t.Id" class="driver-btn btn-invoice">
+                                <i class="bi bi-file-earmark-pdf me-1"></i> Invoice
+                            </a>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<div class="modal fade" id="startModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content modal-content-glass">
+            <form action="/Driver/Driver/StartTrip" method="post">
+                @Html.AntiForgeryToken()
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold text-white">🚀 Start Trip - <span id="startItinerary"></span></h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" name="id" id="startTripId" />
+                    <label class="form-label text-slate-light small fw-bold text-uppercase">Odometer Reading (Start KM)</label>
+                    <input type="number" name="startKM" class="form-control form-control-glass" required min="0" />
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-link text-slate-light text-decoration-none" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="driver-btn btn-start">Confirm Start</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="endModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content modal-content-glass">
+            <form action="/Driver/Driver/EndTrip" method="post">
+                @Html.AntiForgeryToken()
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold text-white">🏁 Finish Trip - <span id="endItinerary"></span></h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" name="id" id="endTripId" />
+
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <label class="form-label text-slate-light small fw-bold text-uppercase">Start KM</label>
+                            <input type="number" id="displayStartKM" class="form-control form-control-glass" readonly />
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label text-slate-light small fw-bold text-uppercase">End KM Reading</label>
+                            <input type="number" name="endKM" id="inputEndKM" class="form-control form-control-glass" required oninput="calculateDistance()" />
+                        </div>
+                    </div>
+
+                    <div class="p-2 mb-3 rounded border border-primary text-center">
+                        <small class="text-uppercase text-muted">Total Run:</small>
+                        <h4 class="mb-0 text-primary fw-bold"><span id="liveTotalDistance">0</span> KM</h4>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-6">
+                            <label class="form-label text-slate-light small fw-bold text-uppercase">Toll Charges</label>
+                            <input type="number" name="tollCharges" class="form-control form-control-glass" step="0.01" value="0" />
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label text-slate-light small fw-bold text-uppercase">Parking</label>
+                            <input type="number" name="parkingCharges" class="form-control form-control-glass" step="0.01" value="0" />
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-link text-slate-light text-decoration-none" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="driver-btn btn-end">Complete Trip</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function openStartModal(id, code) {
+            const modalEl = document.getElementById('startModal');
+
+            // Fill data
+            document.getElementById('startTripId').value = id;
+            document.getElementById('startItinerary').innerText = code;
+
+            // IMPORTANT: Move the modal element to the end of <body>
+            // This stops the .admin-card from "trapping" the modal behind it.
+            document.body.appendChild(modalEl);
+
+            const myModal = new bootstrap.Modal(modalEl);
+            myModal.show();
+        }
+
+
+        function openEndModal(id, code, startKM) {
+            const modalEl = document.getElementById('endModal');
+
+            // Fill data
+            document.getElementById('endTripId').value = id;
+            document.getElementById('endItinerary').innerText = code;
+
+            // Set the Start KM for the calculation
+            document.getElementById('displayStartKM').value = startKM;
+
+            // Reset inputs
+            document.getElementById('inputEndKM').value = "";
+            document.getElementById('liveTotalDistance').innerText = "0";
+
+            document.body.appendChild(modalEl);
+            const myModal = new bootstrap.Modal(modalEl);
+            myModal.show();
+        }
+
+        function calculateDistance() {
+            // parseFloat converts the string input to a number for math
+            const start = parseFloat(document.getElementById('displayStartKM').value) || 0;
+            const end = parseFloat(document.getElementById('inputEndKM').value) || 0;
+
+            const result = end - start;
+            const display = document.getElementById('liveTotalDistance');
+
+            if (end > 0 && result < 0) {
+                display.innerText = "Invalid End KM";
+                display.style.color = "#ef4444"; // Red for error
+            } else {
+                display.innerText = result >= 0 ? result.toFixed(1) : "0";
+                display.style.color = "#3b82f6"; // Back to blue
+            }
+        }
+
+        gsap.from("tbody tr", {
+            opacity: 0,
+            y: 15,
+            stagger: 0.1,
+            duration: 0.5,
+            ease: "back.out(1.7)",
+            clearProps: "all"
+        });
+    </script>
+}

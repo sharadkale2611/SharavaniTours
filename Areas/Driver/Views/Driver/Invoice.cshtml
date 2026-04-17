@@ -1,0 +1,331 @@
+﻿@model SharavaniTours.Models.Trip
+@using SharavaniTours.Helpers
+
+@{
+    Layout = null;
+
+    var ds = Model.DutySlip;
+
+    var totalKm = ds.EndKM - ds.StartKM;
+    var extraKm = Math.Max(0, totalKm - Model.RateCard.BaseKM);
+
+    var totalHours = (decimal)(ds.EndTime - ds.StartTime).TotalHours;
+    var extraHours = Math.Max(0, totalHours - Model.RateCard.BaseHours);
+}
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+    }
+
+    .invoice-box {
+        max-width: 210mm;
+        margin: auto;
+        padding: 10mm;
+        border: 1px solid #000;
+        box-sizing: border-box;
+    }
+
+    /* HEADER */
+    .header {
+        display: flex;
+        border-bottom: 1px solid #000;
+        padding: 5px;
+    }
+
+        .header img{
+            height: 90px;
+            width: auto;
+        }
+
+        .header div:first-child {
+            width: 80px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .header div:nth-child(2) {
+            flex: 1;
+            text-align: center;
+            padding-top:20px;
+        }
+
+        .header h2 {
+            margin: 0;
+            font-size: 18px;
+        }
+
+        .header p {
+            margin: 2px 0;
+            font-size: 12px;
+        }
+
+        .header div:nth-child(3) {
+            width: 150px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            text-align: right;
+        }
+
+    /* COMMON TABLE */
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+    }
+
+    td, th {
+        border: 1px solid #000;
+        padding: 5px;
+    }
+
+    th {
+        background: #f2f2f2;
+    }
+
+    /* DETAILS */
+    .invoice-details {
+        display: flex;
+        border-bottom: 1px solid #000;
+    }
+
+        .invoice-details .left {
+            width: 60%;
+            padding: 8px;
+            border-right: 1px solid #000;
+        }
+
+        .invoice-details .right {
+            width: 40%;
+            padding: 8px;
+        }
+
+    /* 3 COLUMN SECTION */
+    .info-section {
+        display: flex;
+        border-bottom: 1px solid #000;
+    }
+
+        .info-section .col {
+            width: 33.33%;
+            padding: 8px;
+            border-right: 1px solid #000;
+        }
+
+            .info-section .col:last-child {
+                border-right: none;
+            }
+
+    .title {
+        font-weight: bold;
+        border-bottom: 1px solid #000;
+        margin-bottom: 5px;
+    }
+
+    /* TRIP TABLE */
+    .trip-details td:nth-child(odd) {
+        background: #f2f2f2;
+        font-weight: bold;
+    }
+
+    /* CHARGES */
+    .charges-table td:nth-child(2),
+    .charges-table td:nth-child(3),
+    .charges-table td:nth-child(4) {
+        text-align: center;
+    }
+
+    .text-right {
+        text-align: right;
+    }
+
+    /* BOTTOM */
+    .bottom-section {
+        display: flex;
+        border: 1px solid #000;
+        border-top: none;
+    }
+
+    .bottom-left {
+        width: 65%;
+        padding: 10px;
+        border-right: 1px solid #000;
+    }
+
+    .bottom-right {
+        width: 35%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .sign-box {
+        flex: 1;
+        border-bottom: 1px solid #000;
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+        padding-bottom: 10px;
+    }
+
+        .sign-box:last-child {
+            border-bottom: none;
+        }
+
+    .note {
+        font-size: 11px;
+        margin-top: 10px;
+    }
+
+    /* PRINT */
+    @@page {
+        size: A4;
+        margin: 8mm;
+    }
+
+    @@media print {
+        .invoice-box {
+            border: none;
+        }
+    }
+</style>
+
+<div class="invoice-box">
+
+    <!-- HEADER -->
+    <div class="header">
+        <div>
+            <img src="~/logo.png" />
+        </div>
+
+        <div>
+            <h2>SHARAVANI TOURS & TRAVELS</h2>
+            <p>
+                Sr.No. 204/9, Siddhivinayak Colony, Road No. 4, Papde Wasti,<br />
+                Fursungi 412308, Contact No. 07387473977
+            </p>
+        </div>
+
+        <div>
+            <p><strong>Invoice</strong></p>
+            <p>GSTIN: 27AJJPR6872R1ZZ</p>
+        </div>
+    </div>
+
+    <!-- CLIENT -->
+    <div class="invoice-details">
+        <div class="left">
+            <p><strong>To,</strong></p>
+            <p><strong>Kansai Nerolac Paints Limited</strong></p>
+            <p>
+                28th Floor, A Wing, Marathon Futures,<br />
+                NM Joshi Marg, Lower Parel, Mumbai - 400013
+            </p>
+            <p><strong>GST No:</strong> 27AAACK6137E1ZC</p>
+        </div>
+
+        <div class="right">
+            <table>
+                <tr><td>Date</td><td>31/01/2026</td></tr>
+                <tr><td>Invoice No</td><td>3329</td></tr>
+                <tr><td>Itinerary Code</td><td>-</td></tr>
+                <tr><td>Duty Slip No</td><td>390</td></tr>
+                <tr><td>Booked By</td><td>Mr. Devkar Sir</td></tr>
+            </table>
+        </div>
+    </div>
+
+    <!-- BILL / USER / CAB -->
+    <div class="info-section">
+        <div class="col">
+            <div class="title">Bill To</div>
+            <p><strong>Kansai Nerolac Paints Ltd</strong></p>
+            <p>Bhukum, Pune 412115</p>
+        </div>
+
+        <div class="col">
+            <div class="title">User Details</div>
+            <p>Name: Mr. Santosh Moringare</p>
+            <p>Mob: 8378979262</p>
+        </div>
+
+        <div class="col">
+            <div class="title">Cab Details</div>
+            <p>Type: Dzire</p>
+            <p>No: MH12PQ2602</p>
+            <p>Driver: Ashok</p>
+        </div>
+    </div>
+
+    <!-- TRIP -->
+    <table class="trip-details">
+        <tr>
+            <td>Start Kms</td>
+            <td>10200</td>
+            <td>Start Date</td>
+            <td>17/01/2026</td>
+            <td>Start Time</td>
+            <td>7:30am</td>
+        </tr>
+        <tr>
+            <td>Close Kms</td>
+            <td>10382</td>
+            <td>End Date</td>
+            <td>17/01/2026</td>
+            <td>End Time</td>
+            <td>8:00pm</td>
+        </tr>
+        <tr>
+            <td>Total</td>
+            <td>182</td>
+            <td>Days</td>
+            <td>1</td>
+            <td></td>
+            <td></td>
+        </tr>
+    </table>
+
+    <!-- CHARGES -->
+    <table class="charges-table">
+        <tr>
+            <th>Particulars</th>
+            <th>Qty</th>
+            <th>Price</th>
+            <th>Total</th>
+        </tr>
+
+        <tr><td>FIRST 80KM / 8HOURS</td><td>1</td><td>2000</td><td>2000</td></tr>
+        <tr><td>Extra Kms</td><td>102</td><td>13</td><td>1326</td></tr>
+        <tr><td>Extra Hrs</td><td>4</td><td>85</td><td>340</td></tr>
+
+        <tr>
+            <td colspan="3" class="text-right"><strong>Total Amount</strong></td>
+            <td><strong>3666</strong></td>
+        </tr>
+    </table>
+
+    <!-- BOTTOM -->
+    <div class="bottom-section">
+        <div class="bottom-left">
+            <p><strong>RUPEES IN WORD</strong></p>
+            <p style="margin-bottom:100px;">Three Thousand Six Hundred Sixty Six Rupees Only</p>
+
+            <p class="note">
+                Kms & Hrs will be calculated from office to office.<br />
+                (Vehicle are insurred against accident of damage crashed.)<br/>
+                insurance of passanger is not insured in thie quited rates.<br/>
+
+                Cancellation charges will be ₹1000/- compulsory.<br />
+                Toll and parking paid by party.
+            </p>
+        </div>
+
+        <div class="bottom-right">
+            <div class="sign-box">Customers Sign</div>
+            <div class="sign-box">For Sharavani Tours & Travels</div>
+        </div>
+    </div>
+
+</div>

@@ -1,0 +1,24 @@
+﻿@model SharavaniTours.Models.Trip
+
+<h2>Start Trip</h2>
+
+<form asp-action="StartTrip" method="post">
+
+    @Html.AntiForgeryToken()
+
+    <!-- Hidden Trip Id -->
+    <input type="hidden" name="id" value="@Model.Id" />
+
+    <!-- Start KM -->
+    <label>Start KM</label><br />
+    <input type="number" name="startKM" required min="0" />
+
+    <br /><br />
+
+    <button type="submit">Start Trip</button>
+
+</form>
+
+<br />
+
+<a asp-action="MyTrips">Back</a>

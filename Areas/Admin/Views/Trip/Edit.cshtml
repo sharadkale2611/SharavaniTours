@@ -1,0 +1,147 @@
+﻿@model SharavaniTours.Models.Trip
+
+@{
+    ViewData["Title"] = "Modify Trip Assignment";
+}
+
+<style>
+    /* Styles shared with Create page */
+    .form-glass-container {
+        max-width: 850px;
+        margin: 0 auto;
+    }
+
+    .section-label {
+        font-size: 0.7rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        color: #f59e0b;
+        margin-bottom: 20px;
+        display: block;
+        border-left: 3px solid #f59e0b;
+        padding-left: 10px;
+    }
+
+    .form-control-glass {
+        background: rgba(15, 23, 42, 0.4) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        color: #fff !important;
+        border-radius: 10px;
+    }
+
+    .btn-update {
+        background: #f59e0b;
+        color: white;
+        border: none;
+        padding: 12px 40px;
+        border-radius: 10px;
+        font-weight: 700;
+        box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
+    }
+
+    .status-badge-running {
+        background: rgba(13, 202, 240, 0.1);
+        color: #0dcaf0;
+        border: 1px solid rgba(13, 202, 240, 0.2);
+    }
+</style>
+
+<div class="form-glass-container">
+    <div class="d-flex align-items-center gap-3 mb-5">
+        <div class="icon-box" style="width: 45px; height: 45px; background: rgba(245, 158, 11, 0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+            <i class="bi bi-pencil-square text-warning fs-4"></i>
+        </div>
+        <div>
+            <h2 class="fw-800 mb-0" style="color: #fff;">Edit Trip Details</h2>
+            <p class="text-slate-light mb-0">Modify active trip ID: <span class="text-white fw-bold">#@Model.Id</span></p>
+        </div>
+    </div>
+
+    <form asp-area="Admin" asp-controller="Trip" asp-action="Edit" method="post">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="Id" />
+
+        <div class="row g-4">
+            <div class="col-12"><span class="section-label">Re-Assignment</span></div>
+
+            <div class="col-md-6">
+                <label class="form-label">Client</label>
+                <select asp-for="ClientId" id="clientDropdown" class="form-control-glass form-select">
+                    @foreach (var c in ViewBag.Clients)
+                    {
+                        <option value="@c.Id">@c.Name</option>
+                    }
+                </select>
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label">Contact Person</label>
+                <select asp-for="ClientUserId" id="clientUserDropdown" class="form-control-glass form-select">
+                    @foreach (var u in (ViewBag.ClientUsers ?? new List<SharavaniTours.Models.ClientUser>()))
+                    {
+                        <option value="@u.Id">@u.FullName</option>
+                    }
+                </select>
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">Driver</label>
+                <select asp-for="DriverId" class="form-control-glass form-select">
+                    @foreach (var d in ViewBag.Drivers)
+                    {
+                        <option value="@d.Id">@(d.FullName ?? d.Email)</option>
+                    }
+                </select>
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">Vehicle</label>
+                <select asp-for="VehicleId" class="form-control-glass form-select">
+                    @foreach (var v in ViewBag.Vehicles)
+                    {
+                        <option value="@v.Id">@v.VehicleNo</option>
+                    }
+                </select>
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">Trip Status</label>
+                <select asp-for="Status" class="form-control-glass form-select border-warning">
+                    <option value="Pending">Pending</option>
+                    <option value="Running">Running</option>
+                    <option value="Completed">Completed</option>
+                </select>
+            </div>
+
+            <div class="col-12 mt-5"><span class="section-label">Updated Logistics</span></div>
+
+            <div class="col-md-4">
+                <label class="form-label">Rate Card</label>
+                <select asp-for="RateCardId" class="form-control-glass form-select">
+                    @foreach (var r in ViewBag.RateCards)
+                    {
+                        <option value="@r.Id">@r.Name</option>
+                    }
+                </select>
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">Booked By</label>
+                <input asp-for="BookedBy" class="form-control-glass w-100" />
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">Driver Allowance</label>
+                <input asp-for="DriverAllowance" class="form-control-glass w-100" />
+            </div>
+
+            <div class="col-12 d-flex align-items-center justify-content-between mt-5">
+                <a asp-action="Index" class="text-decoration-none fw-600 text-slate-light" style="color:#94a3b8">Discard Changes</a>
+                <button type="submit" class="btn-update">
+                    <i class="bi bi-save me-2"></i> Update Trip
+                </button>
+            </div>
+        </div>
+    </form>
+</div>

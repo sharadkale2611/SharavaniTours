@@ -1,0 +1,254 @@
+﻿@model IEnumerable<SharavaniTours.Models.Trip>
+
+@{
+    ViewData["Title"] = "Trip Log";
+}
+
+<style>
+    /* Consistent Table Styling */
+    .table-glass {
+        color: #e2e8f0;
+        vertical-align: middle;
+        background: rgba(238, 238, 238, 0.07);
+    }
+
+        .table-glass thead th {
+            background: linear-gradient(180deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.9) 100%);
+            color: #3b82f6;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.7rem;
+            letter-spacing: 1px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.05);
+            padding: 12px 10px;
+        }
+
+        .table-glass td {
+            padding: 12px 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            background: transparent;
+            font-size: 0.9rem;
+        }
+
+    /* Status Badges */
+    .badge-status {
+        padding: 5px 10px;
+        border-radius: 6px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+    }
+
+    .status-pending {
+        background: rgba(245, 158, 11, 0.15);
+        color: #f59e0b;
+        border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+
+    .status-running {
+        background: rgba(59, 130, 246, 0.15);
+        color: #3b82f6;
+        border: 1px solid rgba(59, 130, 246, 0.3);
+    }
+
+    .status-completed {
+        background: rgba(16, 185, 129, 0.15);
+        color: #10b981;
+        border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    /* Action Buttons */
+    .action-btn {
+        width: 30px;
+        height: 30px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 6px;
+        transition: all 0.2s;
+        text-decoration: none !important;
+        border: none;
+        font-size: 0.85rem;
+    }
+
+    .btn-view {
+        color: #94a3b8;
+        background: rgba(148, 163, 184, 0.1);
+    }
+
+        .btn-view:hover {
+            background: #94a3b8;
+            color: #fff;
+        }
+
+    .btn-edit {
+        color: #3b82f6;
+        background: rgba(59, 130, 246, 0.1);
+    }
+
+        .btn-edit:hover {
+            background: #3b82f6;
+            color: #fff;
+        }
+
+    .btn-invoice {
+        color: #f59e0b;
+        background: rgba(245, 158, 11, 0.1);
+    }
+
+        .btn-invoice:hover {
+            background: #f59e0b;
+            color: #fff;
+        }
+
+    .btn-delete {
+        color: #ef4444;
+        background: rgba(239, 68, 68, 0.1);
+    }
+
+        .btn-delete:hover {
+            background: #ef4444;
+            color: #fff;
+        }
+
+    .text-slate-light {
+        color: #94a3b8 !important;
+        font-size: 0.8rem;
+    }
+</style>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-800 mb-1" style="color: #fff;">Trip Management</h2>
+        <p class="text-slate-light mb-0">Track bookings, vehicle movement, and billing status.</p>
+    </div>
+    <a asp-area="Admin" asp-controller="Trip" asp-action="Create" class="btn btn-primary px-4 py-2"
+       style="background: #3b82f6; border: none; border-radius: 10px; font-weight: 600;">
+        <i class="bi bi-plus-circle me-2"></i> Create Trip
+    </a>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-glass">
+        <thead>
+            <tr>
+                <th>Code</th>
+                <th>Client</th>
+                <th>Staff/Driver</th>
+                <th>Vehicle</th>
+                <th>Status</th>
+                <th>Distance</th>
+                <th>Revenue</th>
+                <th>Date</th>
+                <th class="text-end">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var t in Model)
+            {
+                var ds = t.DutySlip;
+                <tr>
+                    <td class="fw-bold text-white">@t.ItineraryCode</td>
+                    <td class="text-slate-light">@t.Client?.Name</td>
+                    <td>
+                        <div class="d-flex flex-column">
+                            <span class="text-white">@(t.Driver?.FullName ?? "N/A")</span>
+                            <small class="text-slate-light" style="font-size: 0.7rem;">@t.Driver?.Email</small>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="badge" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);">
+                            @t.Vehicle?.VehicleNo
+                        </span>
+                    </td>
+                    <td>
+                        @if (t.Status == "Pending")
+                        {
+                            <span class="badge-status status-pending">Pending</span>
+                        }
+                        else if (t.Status == "Running")
+                        {
+                            <span class="badge-status status-running">Running</span>
+                        }
+                        else if (t.Status == "Completed")
+                        {
+                            <span class="badge-status status-completed">Completed</span>
+                        }
+                        else
+                        {
+                            <span class="badge-status text-slate-light">@t.Status</span>
+                        }
+                    </td>
+                    <td>
+                        @if (ds != null && ds.EndKM > 0)
+                        {
+                            <span class="text-white">@(ds.EndKM - ds.StartKM) <small class="text-slate-light">KM</small></span>
+                        }
+                        else if (ds != null)
+                        {
+                            <span class="text-info small">In Progress</span>
+                        }
+                        else
+                        {
+                            <span class="text-slate-light">-</span>
+                        }
+                    </td>
+                    <td class="fw-bold">
+                        @if (t.Status == "Completed")
+                        {
+                            <span style="color: #10b981;">₹@t.TotalAmount</span>
+                        }
+                        else
+                        {
+                            <span class="text-slate-light">---</span>
+                        }
+                    </td>
+                    <td class="text-slate-light" style="font-size: 0.75rem;">
+                        @t.CreatedAt.ToString("dd MMM, hh:mm tt")
+                    </td>
+                    <td class="text-end">
+                        <div class="d-flex justify-content-end gap-1">
+                            <a asp-action="Details" asp-route-id="@t.Id" class="action-btn btn-view" title="View Details">
+                                <i class="bi bi-eye"></i>
+                            </a>
+
+                            @if (t.Status != "Completed")
+                            {
+                                <a asp-action="Edit" asp-route-id="@t.Id" class="action-btn btn-edit" title="Edit Trip">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                            }
+
+                            @if (t.Status == "Completed")
+                            {
+                                <a asp-area="Driver" asp-controller="Driver" asp-action="Invoice" asp-route-id="@t.Id"
+                                   class="action-btn btn-invoice" title="Generate Invoice">
+                                    <i class="bi bi-file-earmark-pdf"></i>
+                                </a>
+                            }
+
+                            <form asp-action="Delete" asp-route-id="@t.Id" method="post" style="display:inline;">
+                                <button type="submit" class="action-btn btn-delete" title="Delete"
+                                        onclick="return confirm('Delete trip @t.ItineraryCode?')">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@section Scripts {
+    <script>
+        gsap.from("tbody tr", {
+            opacity: 0,
+            y: 10,
+            stagger: 0.03,
+            duration: 0.4,
+            ease: "power2.out"
+        });
+    </script>
+}

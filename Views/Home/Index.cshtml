@@ -1,0 +1,147 @@
+﻿@{
+    ViewData["Title"] = "Premium Travel Solutions";
+}
+
+<style>
+    /* Content-Specific Styling */
+    .hero-content {
+        color: white;
+    }
+
+    .hero-title {
+        font-size: clamp(2.5rem, 5vw, 4rem);
+        font-weight: 800;
+        line-height: 1.1;
+        margin-bottom: 1.5rem;
+        background: linear-gradient(to right, #ffffff, #94a3b8);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .feature-badge {
+        display: inline-block;
+        padding: 0.5rem 1.2rem;
+        background: rgba(59, 130, 246, 0.2);
+        border: 1px solid rgba(59, 130, 246, 0.3);
+        border-radius: 50px;
+        color: #60a5fa;
+        font-weight: 600;
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+    }
+
+    .stats-container {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.5rem;
+        margin-top: 3rem;
+        padding-top: 2rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .stat-item h3 {
+        font-weight: 700;
+        color: #f59e0b;
+        margin-bottom: 0;
+    }
+
+    .stat-item p {
+        font-size: 0.8rem;
+        color: rgba(255, 255, 255, 0.6);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .booking-preview {
+        background: rgba(15, 23, 42, 0.3);
+        border-radius: 20px;
+        padding: 1.5rem;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    /* GSAP hidden states */
+    .reveal {
+        opacity: 0;
+    }
+</style>
+
+<div class="container-fluid">
+    <div class="row align-items-center g-5">
+        <div class="col-lg-7 hero-content">
+            <div class="reveal" id="heroBadge">
+                <span class="feature-badge">✨ 24/7 Premium Service</span>
+            </div>
+
+            <h1 class="hero-title reveal" id="heroTitle">
+                Your Journey, <br />
+                Our Commitment.
+            </h1>
+
+            <p class="lead text-white-50 mb-4 reveal" id="heroLead">
+                Experience the gold standard of travel with SharavaniTours.
+                Whether it's a quick city transfer or a long-distance getaway,
+                our fleet is ready when you are.
+            </p>
+
+            <div class="d-flex gap-3 mb-5 reveal" id="heroActions">
+                <a href="#" class="btn btn-primary btn-lg px-4" style="background: #3b82f6; border:none;">Book Now</a>
+                <a href="#" class="btn btn-outline-light btn-lg px-4">View Fleet</a>
+            </div>
+
+            <div class="stats-container reveal" id="heroStats">
+                <div class="stat-item">
+                    <h3>50k+</h3>
+                    <p>Rides Completed</p>
+                </div>
+                <div class="stat-item">
+                    <h3>4.9/5</h3>
+                    <p>User Rating</p>
+                </div>
+                <div class="stat-item">
+                    <h3>15min</h3>
+                    <p>Avg. Pickup</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-5 reveal" id="heroVisual">
+            <div class="booking-preview">
+                <h5 class="text-white mb-4">Quick Estimate</h5>
+                <form>
+                    <div class="mb-3">
+                        <label class="form-label text-white-50 small">Pickup Location</label>
+                        <input type="text" class="form-control bg-dark border-secondary text-white" placeholder="Enter city or airport">
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label text-white-50 small">Destination</label>
+                        <input type="text" class="form-control bg-dark border-secondary text-white" placeholder="Where to?">
+                    </div>
+                    <button type="button" class="btn btn-warning w-100 fw-bold py-2">GET PRICE</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Local GSAP Animations for this page
+        document.addEventListener('DOMContentLoaded', () => {
+            const pageTimeline = gsap.timeline({ delay: 1.5 }); // Starts after layout animations
+
+            pageTimeline
+                .to('#heroBadge', { opacity: 1, y: 0, duration: 0.6 })
+                .to('#heroTitle', { opacity: 1, y: 0, duration: 0.8, ease: "back.out(1.7)" }, "-=0.4")
+                .to('#heroLead', { opacity: 1, y: 0, duration: 0.6 }, "-=0.6")
+                .to('#heroActions', { opacity: 1, x: 0, duration: 0.5 }, "-=0.4")
+                .to('#heroVisual', { opacity: 1, scale: 1, duration: 0.8, ease: "power2.out" }, "-=0.8")
+                .to('.stat-item', {
+                    opacity: 1,
+                    y: 0,
+                    duration: 0.5,
+                    stagger: 0.2,
+                    onStart: () => document.getElementById('heroStats').style.opacity = 1
+                }, "-=0.2");
+        });
+    </script>
+}

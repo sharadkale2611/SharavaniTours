@@ -1,0 +1,36 @@
+﻿@model SharavaniTours.Models.Trip
+
+<h2>End Trip</h2>
+
+<form asp-action="EndTrip" method="post">
+
+    @Html.AntiForgeryToken()
+
+    <!-- Hidden Trip Id -->
+    <input type="hidden" name="id" value="@Model.Id" />
+
+    <!-- End KM -->
+    <label>End KM</label><br />
+    <input type="number" name="endKM" required min="0" />
+
+    <br /><br />
+
+    <!-- Toll -->
+    <label>Toll Charges</label><br />
+    <input type="number" name="tollCharges" step="0.01" value="0" />
+
+    <br /><br />
+
+    <!-- Parking -->
+    <label>Parking Charges</label><br />
+    <input type="number" name="parkingCharges" step="0.01" value="0" />
+
+    <br /><br />
+
+    <button type="submit">Finish Trip</button>
+
+</form>
+
+<br />
+
+<a asp-action="MyTrips">Back</a>

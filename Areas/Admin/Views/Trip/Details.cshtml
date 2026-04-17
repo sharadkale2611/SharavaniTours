@@ -1,0 +1,236 @@
+﻿@model SharavaniTours.Models.Trip
+
+@{
+    ViewData["Title"] = "Trip Overview";
+    var statusClass = Model.Status switch
+    {
+        "Completed" => "bg-success",
+        "Running" => "bg-info",
+        _ => "bg-warning"
+    };
+}
+
+<style>
+    .details-container {
+        max-width: 1100px;
+        margin: 0 auto;
+    }
+
+    .glass-card {
+        background: rgba(30, 41, 59, 0.4);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 16px;
+        padding: 20px;
+        height: 100%;
+        transition: transform 0.3s ease;
+    }
+
+        .glass-card:hover {
+            border-color: rgba(59, 130, 246, 0.3);
+        }
+
+    .info-label {
+        color: #94a3b8;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-weight: 700;
+        display: block;
+        margin-bottom: 2px;
+    }
+
+    .info-value {
+        color: #fff;
+        font-size: 1rem;
+        font-weight: 500;
+    }
+
+    .section-icon {
+        width: 40px;
+        height: 40px;
+        background: rgba(59, 130, 246, 0.1);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #3b82f6;
+        margin-bottom: 15px;
+    }
+
+    .status-badge {
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+    }
+
+    .total-amount-box {
+        background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.1));
+        border: 1px solid rgba(16, 185, 129, 0.2);
+        padding: 15px;
+        border-radius: 12px;
+        text-align: center;
+    }
+</style>
+
+<div class="details-container">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+        <div>
+            <h2 class="fw-800 text-white mb-1">Trip Details</h2>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item"><a asp-action="Index" class="text-primary text-decoration-none">Trips</a></li>
+                    <li class="breadcrumb-item active text-slate-light" aria-current="page">@Model.ItineraryCode</li>
+                </ol>
+            </nav>
+        </div>
+        <div class="d-flex gap-2">
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-warning btn-sm px-3 rounded-pill">
+                <i class="bi bi-pencil me-1"></i> Edit Trip
+            </a>
+            <a asp-action="Index" class="btn btn-outline-light btn-sm px-3 rounded-pill">
+                <i class="bi bi-arrow-left me-1"></i> Back
+            </a>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="glass-card">
+                <div class="section-icon"><i class="bi bi-info-circle-fill"></i></div>
+                <h5 class="text-white fw-700 mb-3">Basic Info</h5>
+
+                <div class="mb-3">
+                    <span class="info-label">Itinerary Code</span>
+                    <span class="info-value text-primary">@Model.ItineraryCode</span>
+                </div>
+                <div class="mb-3">
+                    <span class="info-label">Current Status</span>
+                    <span class="status-badge @statusClass text-white">@Model.Status</span>
+                </div>
+                <div class="mb-0">
+                    <span class="info-label">Booking Date</span>
+                    <span class="info-value">@Model.BookedDate.ToString("dd MMM yyyy")</span>
+                    <small class="text-slate-light d-block">By: @Model.BookedBy</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="glass-card">
+                <div class="section-icon"><i class="bi bi-building"></i></div>
+                <h5 class="text-white fw-700 mb-3">Client Information</h5>
+
+                <div class="mb-3">
+                    <span class="info-label">Corporate Client</span>
+                    <span class="info-value">@Model.Client?.Name</span>
+                </div>
+                <div>
+                    <span class="info-label">Point of Contact</span>
+                    @if (Model.ClientUser != null)
+                    {
+                        <span class="info-value d-block">@Model.ClientUser.FullName</span>
+                        <a href="tel:@Model.ClientUser.MobileNo" class="text-primary text-decoration-none small">
+                            <i class="bi bi-telephone me-1"></i> @Model.ClientUser.MobileNo
+                        </a>
+                    }
+                    else
+                    {
+                        <span class="text-muted small italic">No contact assigned</span>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="glass-card">
+                <div class="section-icon"><i class="bi bi-car-front-fill"></i></div>
+                <h5 class="text-white fw-700 mb-3">Fleet Assignment</h5>
+
+                <div class="mb-3">
+                    <span class="info-label">Assigned Driver</span>
+                    <span class="info-value">@(Model.Driver?.FullName ?? Model.Driver?.Email)</span>
+                </div>
+                <div>
+                    <span class="info-label">Vehicle Registration</span>
+                    <span class="info-value text-uppercase">@Model.Vehicle?.VehicleNo</span>
+                    <span class="badge bg-secondary ms-1" style="font-size: 0.6rem;">@Model.Vehicle?.Type</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="glass-card">
+                <div class="section-icon" style="color:#f59e0b; background: rgba(245, 158, 11, 0.1);"><i class="bi bi-card-checklist"></i></div>
+                <h5 class="text-white fw-700 mb-3">Billing Strategy: @Model.RateCard?.Name</h5>
+
+                <div class="row">
+                    <div class="col-6 mb-3">
+                        <span class="info-label">Base Package</span>
+                        <span class="info-value text-warning">₹@Model.RateCard?.BasePrice</span>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <span class="info-label">Included Usage</span>
+                        <span class="info-value">@Model.RateCard?.BaseKM KM / @Model.RateCard?.BaseHours Hrs</span>
+                    </div>
+                    <div class="col-6">
+                        <span class="info-label">Extra KM Rate</span>
+                        <span class="info-value">₹@Model.RateCard?.ExtraKMRate <small class="text-slate-light">/km</small></span>
+                    </div>
+                    <div class="col-6">
+                        <span class="info-label">Extra Hour Rate</span>
+                        <span class="info-value">₹@Model.RateCard?.ExtraHourRate <small class="text-slate-light">/hr</small></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="glass-card border-primary border-opacity-25">
+                <div class="section-icon" style="color:#10b981; background: rgba(16, 185, 129, 0.1);"><i class="bi bi-lightning-fill"></i></div>
+                <h5 class="text-white fw-700 mb-3">Live Progress & Final Bill</h5>
+
+                <div class="row align-items-center">
+                    <div class="col-sm-7">
+                        @if (Model.DutySlip != null)
+                        {
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-slate-light small">Start Reading:</span>
+                                <span class="text-white small">@Model.DutySlip.StartKM KM</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-slate-light small">End Reading:</span>
+                                <span class="text-white small">@(Model.DutySlip.EndKM > 0 ? Model.DutySlip.EndKM + " KM" : "Running...")</span>
+                            </div>
+                            <hr class="border-secondary opacity-20">
+                            <div class="d-flex justify-content-between">
+                                <span class="text-slate-light small">Driver Allowance:</span>
+                                <span class="text-white small">₹@Model.DriverAllowance</span>
+                            </div>
+                        }
+                        else
+                        {
+                            <p class="text-muted small mb-0 italic"><i class="bi bi-clock-history me-1"></i> Waiting for driver to start trip...</p>
+                        }
+                    </div>
+                    <div class="col-sm-5 mt-3 mt-sm-0">
+                        <div class="total-amount-box">
+                            <span class="info-label" style="color:#10b981">Final Amount</span>
+                            @if (Model.Status == "Completed")
+                            {
+                                <h3 class="fw-800 text-white mb-0">₹@Model.TotalAmount</h3>
+                            }
+                            else
+                            {
+                                <h3 class="fw-800 text-slate-light mb-0">--</h3>
+                                <small class="text-muted">Pending Completion</small>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

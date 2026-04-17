@@ -1,0 +1,205 @@
+﻿@model SharavaniTours.Models.Trip
+@using SharavaniTours.Helpers
+
+@{
+    var ds = Model.DutySlip;
+
+    var totalKm = ds.EndKM - ds.StartKM;
+    var extraKm = Math.Max(0, totalKm - Model.RateCard.BaseKM);
+
+    var totalHours = (decimal)(ds.EndTime - ds.StartTime).TotalHours;
+    var extraHours = Math.Max(0, totalHours - Model.RateCard.BaseHours);
+}
+
+<style>
+    body {
+        font-family: Arial;
+    }
+
+    .invoice-box {
+        width: 800px;
+        margin: auto;
+        padding: 20px;
+        border: 1px solid #ccc;
+    }
+
+    .header {
+        text-align: center;
+        font-weight: bold;
+    }
+
+    .row {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 15px;
+    }
+
+        .table th, .table td {
+            border: 1px solid #000;
+            padding: 8px;
+            text-align: center;
+        }
+</style>
+
+<div class="invoice-box">
+
+    <div class="header">
+        <h2>SHARAVANI TOURS & TRAVELS</h2>
+        <p>Pune, Maharashtra</p>
+    </div>
+
+    <hr />
+
+    <div class="row">
+        <div>
+            <p><strong>Client:</strong> @Model.Client.Name</p>
+            <p><strong>Vehicle:</strong> @Model.Vehicle.VehicleNo</p>
+            <p><strong>Booked By:</strong> @Model.BookedBy</p>
+        </div>
+        <div>
+            <p><strong>Date:</strong> @Model.BookedDate.ToShortDateString()</p>
+            <p><strong>Invoice No:</strong> @Model.ItineraryCode</p>
+            <p><strong>Status:</strong> @Model.Status</p>
+        </div>
+    </div>
+
+    <hr />
+
+    <table class="table">
+        <tr>
+            <th>Description</th>
+            <th>Details</th>
+        </tr>
+        <tr>
+            <td>Start KM</td>
+            <td>@ds.StartKM</td>
+        </tr>
+        <tr>
+            <td>End KM</td>
+            <td>@ds.EndKM</td>
+        </tr>
+        <tr>
+            <td>Total KM</td>
+            <td>@totalKm</td>
+        </tr>
+        <tr>
+            <td>Start Time</td>
+            <td>@ds.StartTime</td>
+        </tr>
+        <tr>
+            <td>End Time</td>
+            <td>@ds.EndTime</td>
+        </tr>
+        <tr>
+            <td>Base Package</td>
+            <td>@Model.RateCard.BaseKM KM / @Model.RateCard.BaseHours Hours</td>
+        </tr>
+        <tr>
+            <td>Extra KM</td>
+            <td>@extraKm × ₹@Model.RateCard.ExtraKMRate</td>
+        </tr>
+        <tr>
+            <td>Extra Hours</td>
+            <td>@extraHours × ₹@Model.RateCard.ExtraHourRate</td>
+        </tr>
+    </table>
+
+    <br />
+
+    <table class="table">
+        <tr>
+            <th>Charges</th>
+            <th>Amount</th>
+        </tr>
+        <tr>
+            <td>Base Fare</td>
+            <td>₹@Model.RateCard.BasePrice</td>
+        </tr>
+        <tr>
+            <td>Extra KM</td>
+            <td>₹@(extraKm * Model.RateCard.ExtraKMRate)</td>
+        </tr>
+        <tr>
+            <td>Extra Hours</td>
+            <td>₹@(extraHours * Model.RateCard.ExtraHourRate)</td>
+        </tr>
+        <tr>
+            <td>Driver Allowance</td>
+            <td>₹@Model.DriverAllowance</td>
+        </tr>
+        <tr>
+            <td>Toll Charges</td>
+            <td>₹@ds.TollCharges</td>
+        </tr>
+        <tr>
+            <td>Parking Charges</td>
+            <td>₹@ds.ParkingCharges</td>
+        </tr>
+        <tr>
+            <td><strong>Total</strong></td>
+            <td><strong>₹@Model.TotalAmount</strong></td>
+        </tr>
+    </table>
+
+    <br />
+
+    <p>
+        <strong>Amount in Words:</strong>
+        @NumberHelper.NumberToWords((int)Model.TotalAmount) Rupees Only
+    </p>
+
+    <br /><br />
+
+    <div class="row">
+        <div>
+            <p>Customer Signature</p>
+        </div>
+        <div>
+            <p>Authorized Signature</p>
+        </div>
+    </div>
+
+    <br />
+
+    <button onclick="window.print()">Print</button>
+
+    Invoice Date: 
+    Invoice No.
+    Itinerary Code
+    Duty Slip No
+    Booked By
+    User Details: ClientUserdetails
+        - Name
+        - Mob
+    Cab Details:
+        - Type
+        - Cab No
+        - Driver
+
+    start kms
+    start date
+    start time
+    close kms
+    End Date
+    End Time
+    Total
+    Days
+
+    First 40km / 4 Hrs
+    First 80km / 8 Hrs
+    Outstation Charges (300 per day)
+    Extra Kms
+    Extra Hrs
+    Driver Allowance
+    Toll and Parking
+    Total Amount
+    Rupees in word
+
+
+
+</div>

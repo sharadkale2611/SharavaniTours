@@ -1,0 +1,140 @@
+﻿@model SharavaniTours.Models.Client
+
+@{
+    ViewData["Title"] = "Modify Client Profile";
+}
+
+<style>
+    /* Reuse consistent form glassmorphism */
+    .form-glass-container {
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .form-label {
+        color: #94a3b8;
+        font-weight: 600;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 8px;
+    }
+
+    .form-control-glass {
+        background: rgba(15, 23, 42, 0.4) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        color: #fff !important;
+        padding: 12px 16px;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+    }
+
+        .form-control-glass:focus {
+            background: rgba(15, 23, 42, 0.6) !important;
+            border-color: #3b82f6 !important;
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
+            outline: none;
+        }
+
+    .btn-update {
+        background: #3b82f6;
+        color: white;
+        border: none;
+        padding: 12px 30px;
+        border-radius: 10px;
+        font-weight: 700;
+        transition: all 0.3s;
+        box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+    }
+
+        .btn-update:hover {
+            background: #2563eb;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+        }
+
+    .btn-back {
+        color: #94a3b8;
+        text-decoration: none;
+        font-weight: 600;
+        transition: color 0.2s;
+    }
+
+        .btn-back:hover {
+            color: #fff;
+        }
+
+    .validation-summary-glass {
+        background: rgba(239, 68, 68, 0.1);
+        border: 1px solid rgba(239, 68, 68, 0.2);
+        border-radius: 12px;
+        padding: 15px;
+        margin-bottom: 25px;
+    }
+</style>
+
+<div class="form-glass-container">
+    <div class="d-flex align-items-center gap-3 mb-4">
+        <div class="icon-box" style="width: 45px; height: 45px; background: rgba(59, 130, 246, 0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+            <i class="bi bi-pencil-square text-primary fs-4"></i>
+        </div>
+        <div>
+            <h2 class="fw-800 mb-0" style="color: #fff;">Edit Client</h2>
+            <p class="text-slate-light mb-0" style="color: #94a3b8 !important;">Updating profile for <span class="text-white fw-bold">@Model.Name</span></p>
+        </div>
+    </div>
+
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div asp-validation-summary="All" class="validation-summary-glass text-danger small"></div>
+    }
+
+    <form method="post" class="mt-4">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="Id" />
+
+        <div class="row g-4">
+            <div class="col-12">
+                <label asp-for="Name" class="form-label">Client / Company Name</label>
+                <input asp-for="Name" class="form-control form-control-glass" placeholder="Update company name" />
+                <span asp-validation-for="Name" class="text-danger small mt-1 d-block"></span>
+            </div>
+
+            <div class="col-12">
+                <label asp-for="GST" class="form-label">GST Number</label>
+                <input asp-for="GST" class="form-control form-control-glass" placeholder="Update GST detail" />
+                <span asp-validation-for="GST" class="text-danger small mt-1 d-block"></span>
+            </div>
+
+            <div class="col-12">
+                <label asp-for="Address" class="form-label">Office Address</label>
+                <textarea asp-for="Address" class="form-control form-control-glass" rows="4" placeholder="Update billing address">@Model.Address</textarea>
+                <span asp-validation-for="Address" class="text-danger small mt-1 d-block"></span>
+            </div>
+
+            <div class="col-12 d-flex align-items-center justify-content-between mt-5">
+                <a asp-action="Index" class="btn-back">
+                    <i class="bi bi-arrow-left me-2"></i> Cancel Changes
+                </a>
+                <button type="submit" class="btn-update px-5">
+                    <i class="bi bi-check2-circle me-2"></i> Update Records
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        // Smooth reveal animation
+        gsap.from(".form-glass-container", {
+            opacity: 0,
+            scale: 0.98,
+            duration: 0.5,
+            ease: "power2.out"
+        });
+    </script>
+}

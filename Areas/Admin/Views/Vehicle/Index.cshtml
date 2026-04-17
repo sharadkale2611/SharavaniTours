@@ -1,0 +1,181 @@
+﻿@model IEnumerable<SharavaniTours.Models.Vehicle>
+
+@{
+    ViewData["Title"] = "Fleet Management";
+}
+
+<style>
+    /* Consistent Table Styling */
+    .table-glass {
+        color: #e2e8f0;
+        vertical-align: middle;
+        background: rgba(238, 238, 238, 0.07);
+    }
+
+        .table-glass thead th {
+            background: linear-gradient(180deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.9) 100%);
+            color: #3b82f6;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 1px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.05);
+            padding: 15px;
+        }
+
+        .table-glass td {
+            padding: 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            background: transparent;
+            color:#eee !important;
+        }
+
+        .table-glass tr:hover td {
+            background: rgba(255, 255, 255, 0.02);
+            color: #fff;
+        }
+
+    /* Vehicle Plate Badge */
+    .plate-badge {
+        background: #f8fafc;
+        color: #1e293b;
+        font-weight: 700;
+        padding: 4px 10px;
+        border-radius: 4px;
+        border-left: 3px solid #3b82f6;
+        font-family: 'Monaco', 'Consolas', monospace;
+        letter-spacing: 1px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Action Icon Buttons */
+    .action-btn {
+        width: 32px;
+        height: 32px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        transition: all 0.2s;
+        text-decoration: none !important;
+        border: none;
+    }
+
+    .btn-edit {
+        color: #3b82f6;
+        background: rgba(59, 130, 246, 0.1);
+    }
+
+        .btn-edit:hover {
+            background: #3b82f6;
+            color: white;
+        }
+
+    .btn-delete {
+        color: #ef4444;
+        background: rgba(239, 68, 68, 0.1);
+    }
+
+        .btn-delete:hover {
+            background: #ef4444;
+            color: white;
+        }
+
+    .text-slate-light {
+        color: #94a3b8 !important;
+        font-size: 0.85rem;
+    }
+</style>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-800 mb-1" style="color: #fff;">Vehicles</h2>
+        <p class="text-slate-light mb-0">Monitor and manage your fleet inventory and driver assignments.</p>
+    </div>
+    <a asp-action="Create" class="btn btn-primary px-4 py-2"
+       style="background: #3b82f6; border: none; border-radius: 10px; font-weight: 600;">
+        <i class="bi bi-car-front-fill me-2"></i> Add Vehicle
+    </a>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-glass">
+        <thead>
+            <tr>
+                <th width="50">#</th>
+                <th>Vehicle No</th>
+                <th>Vehicle Type</th>
+                <th>Assigned Driver</th>
+                <th class="text-end">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                int i = 1;
+            }
+            @foreach (var v in Model)
+            {
+                <tr>
+                    <td class="text-slate-light">@i</td>
+                    <td>
+                        <span class="plate-badge">@v.VehicleNo</span>
+                    </td>
+                    <td>
+                        <i class="bi bi-truck me-2 text-primary"></i>@v.Type
+                    </td>
+                    <td>
+                        @if (v.Driver != null)
+                        {
+                            <span class="text-white fw-600">
+                                <i class="bi bi-person-check me-1 text-success"></i>
+                                @(v.Driver?.FullName ?? v.Driver?.Email)
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="text-slate-light italic">Unassigned</span>
+                        }
+                    </td>
+                    <td class="text-end">
+                        <div class="d-flex justify-content-end gap-2">
+                            <a asp-action="Edit" asp-route-id="@v.Id" class="action-btn btn-edit" title="Edit Vehicle">
+                                <i class="bi bi-pencil-square"></i>
+                            </a>
+
+                            <form asp-action="Delete" asp-route-id="@v.Id" method="post" style="display:inline;">
+                                <button type="submit" class="action-btn btn-delete"
+                                        title="Delete Vehicle"
+                                        onclick="return confirm('Are you sure you want to delete vehicle @v.VehicleNo?')">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                i++;
+            }
+            @if (!Model.Any())
+            {
+                <tr>
+                    <td colspan="5" class="text-center py-5 text-slate-light">
+                        <i class="bi bi-car-front fs-2 d-block mb-2"></i>
+                        No vehicles found in the system.
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@section Scripts {
+    <script>
+        // Entrance animation
+        gsap.from("tbody tr", {
+            opacity: 0,
+            x: -10,
+            stagger: 0.05,
+            duration: 0.4,
+            ease: "power2.out"
+        });
+    </script>
+}

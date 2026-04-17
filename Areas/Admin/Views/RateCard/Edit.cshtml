@@ -1,0 +1,126 @@
+﻿@model SharavaniTours.Models.RateCard
+
+@{
+    ViewData["Title"] = "Edit Pricing Strategy";
+}
+
+<style>
+    /* Consistent styles with Create page */
+    .form-glass-container {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .section-title {
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        color: #f59e0b;
+        margin-bottom: 20px;
+        padding-bottom: 5px;
+        border-bottom: 1px solid rgba(245, 158, 11, 0.2);
+    }
+
+    .form-label {
+        color: #94a3b8;
+        font-weight: 600;
+        font-size: 0.85rem;
+        margin-bottom: 8px;
+    }
+
+    .form-control-glass {
+        background: rgba(15, 23, 42, 0.4) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        color: #fff !important;
+        padding: 10px 15px;
+        border-radius: 10px;
+    }
+
+    .btn-update {
+        background: #f59e0b;
+        color: white;
+        border: none;
+        padding: 12px 35px;
+        border-radius: 10px;
+        font-weight: 700;
+        transition: all 0.3s;
+        box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
+    }
+
+        .btn-update:hover {
+            background: #d97706;
+            transform: translateY(-2px);
+        }
+</style>
+
+<div class="form-glass-container">
+    <div class="d-flex align-items-center gap-3 mb-5">
+        <div class="icon-box" style="width: 45px; height: 45px; background: rgba(245, 158, 11, 0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+            <i class="bi bi-pencil-square text-warning fs-4"></i>
+        </div>
+        <div>
+            <h2 class="fw-800 mb-0" style="color: #fff;">Edit Rate Card</h2>
+            <p class="text-slate-light mb-0" style="color: #94a3b8 !important;">Adjusting pricing for <span class="text-white">@Model.Name</span></p>
+        </div>
+    </div>
+
+    <form asp-area="Admin" asp-controller="RateCard" asp-action="Edit" method="post">
+        <input type="hidden" asp-for="Id" />
+
+        <div class="row g-4">
+            <div class="col-12">
+                <label asp-for="Name" class="form-label">Plan Name</label>
+                <input asp-for="Name" class="form-control-glass w-100" />
+            </div>
+
+            <div class="col-12 mt-5"><div class="section-title">Standard Base Package</div></div>
+
+            <div class="col-md-4">
+                <label asp-for="BaseKM" class="form-label">Base KM</label>
+                <input asp-for="BaseKM" class="form-control-glass w-100" />
+            </div>
+
+            <div class="col-md-4">
+                <label asp-for="BaseHours" class="form-label">Base Hours</label>
+                <input asp-for="BaseHours" class="form-control-glass w-100" />
+            </div>
+
+            <div class="col-md-4">
+                <label asp-for="BasePrice" class="form-label">Base Price (₹)</label>
+                <input asp-for="BasePrice" class="form-control-glass w-100" />
+            </div>
+
+            <div class="col-12 mt-5"><div class="section-title">Extra Usage Charges</div></div>
+
+            <div class="col-md-6">
+                <label asp-for="ExtraKMRate" class="form-label">Extra KM Rate (₹)</label>
+                <input asp-for="ExtraKMRate" class="form-control-glass w-100" />
+            </div>
+
+            <div class="col-md-6">
+                <label asp-for="ExtraHourRate" class="form-label">Extra Hour Rate (₹)</label>
+                <input asp-for="ExtraHourRate" class="form-control-glass w-100" />
+            </div>
+
+            <div class="col-12 mt-5"><div class="section-title">Outstation Defaults</div></div>
+
+            <div class="col-md-6">
+                <label asp-for="OutstationPerDayKM" class="form-label">Min. Daily KM</label>
+                <input asp-for="OutstationPerDayKM" class="form-control-glass w-100" />
+            </div>
+
+            <div class="col-md-6">
+                <label asp-for="OutstationRatePerDay" class="form-label">Outstation Rate (₹)</label>
+                <input asp-for="OutstationRatePerDay" class="form-control-glass w-100" />
+            </div>
+
+            <div class="col-12 d-flex align-items-center justify-content-between mt-5 pt-4">
+                <a asp-action="Index" class="text-decoration-none fw-600" style="color: #94a3b8;">Cancel Changes</a>
+                <button type="submit" class="btn-update">
+                    <i class="bi bi-arrow-repeat me-2"></i>Update Rate Card
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
