@@ -1,0 +1,280 @@
+﻿@model SharavaniTours.Models.Trip
+@using SharavaniTours.Helpers
+
+@{
+    var ds = Model.DutySlip;
+
+    var totalKm = ds.EndKM - ds.StartKM;
+    var extraKm = Math.Max(0, totalKm - Model.RateCard.BaseKM);
+
+    var totalHours = (decimal)(ds.EndTime - ds.StartTime).TotalHours;
+    var extraHours = Math.Max(0, totalHours - Model.RateCard.BaseHours);
+}
+
+<style>
+
+    html, body {
+        height: 100%;
+    }
+    body {
+        font-family: Arial;
+        margin: 0;
+    }
+
+    .bottom-section {
+        width: 100%;
+    }
+
+    .spacer {
+        height: 150px;
+    }
+
+    .invoice-box {
+        width: 100%;
+        min-height: 100%;
+        box-sizing: border-box;
+        display: table;
+    }
+
+    .invoice-content {
+        display: table-row;
+    }
+
+    .invoice-footer {
+        display: table-row;
+        height: 1px;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+        page-break-inside: avoid;
+    }
+
+    tr {
+        page-break-inside: avoid;
+    }
+
+    td, th {
+        border: 1px solid #000;
+        padding: 6px;
+    }
+
+    th {
+        background: #f2f2f2;
+    }
+
+    .no-border td {
+        border: none;
+    }
+
+    .text-center {
+        text-align: center;
+    }
+
+    .text-right {
+        text-align: right;
+    }
+
+    .title {
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
+
+    @@page {
+        size: A4;
+        margin: 5mm;
+    }
+</style>
+
+<div class="invoice-box">
+    <div class="invoice-content">
+    <!-- HEADER -->
+    <table class="no-border">
+        <tr>
+            <td style="width:80px;">
+                <img src="https://localhost:7287/logo.png" style="height:80px;" />
+            </td>
+            <td class="text-center">
+                <h3 style="margin:0;">SHARAVANI TOURS & TRAVELS</h3>
+                <p style="margin:0;font-size:12px;">
+                    Sr.No. 204/9, Siddhivinayak Colony, Road No. 4, Papde Wasti,<br />
+                    Fursungi 412308, Contact No. 07387473977
+                </p>
+            </td>
+            <td class="text-right" style="width:150px;">
+                <strong>Invoice</strong><br />
+                GSTIN: 27AJJPR6872R1ZZ
+            </td>
+        </tr>
+    </table>
+
+    <!-- CLIENT + INVOICE -->
+    <table>
+        <tr>
+            <td style="width:60%;">
+                <strong>To,</strong><br />
+                <strong>@Model.Client?.Name</strong><br />
+                @Model.Client?.Address<br />
+                <strong>GST:</strong> @Model.Client?.GST
+            </td>
+            <td style="width:40%;">
+                <table>
+                    <tr>
+                        <td>Date</td>
+                        <td>
+                            @(Model.BookedDate == DateTime.MinValue
+                                ? ""
+                                : Model.BookedDate.ToString("dd/MM/yyyy"))
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Invoice No</td>
+                        <td>@Model.Id</td>
+                    </tr>
+                    <tr>
+                        <td>Itinerary</td>
+                        <td>@Model.ItineraryCode</td>
+                    </tr>
+                    <tr>
+                        <td>Duty Slip</td>
+                        <td>@Model.DutySlip?.Id</td>
+                    </tr>
+                    <tr>
+                        <td>Booked By</td>
+                        <td>@Model.BookedBy</td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+
+    <!-- BILL / USER / CAB -->
+    <table>
+        <tr>
+            <td>
+                <div class="title">Bill To</div>
+                <strong>@Model.Client?.Name</strong><br />
+                @Model.Client?.Address
+            </td>
+            <td>
+                <div class="title">User Details</div>
+                Name: @Model.ClientUser?.FullName<br />
+                Mob: @Model.ClientUser?.MobileNo
+            </td>
+            <td>
+                <div class="title">Cab Details</div>
+                Type: @Model.Vehicle?.Type<br />
+                No: @Model.Vehicle?.VehicleNo<br />
+                Driver: @Model.Driver?.FullName
+            </td>
+        </tr>
+    </table>
+
+    <!-- TRIP -->
+    <table>
+        <tr>
+            <td>Start KM</td>
+            <td>@ds.StartKM</td>
+            <td>Start Date</td>
+            <td>@ds.StartTime.ToString("dd/MM/yyyy")</td>
+            <td>Start Time</td>
+            <td>@ds.StartTime.ToString("hh:mm tt")</td>
+        </tr>
+        <tr>
+            <td>Close KM</td>
+            <td>@ds.EndKM</td>
+            <td>End Date</td>
+            <td>@ds.EndTime.ToString("dd/MM/yyyy")</td>
+            <td>End Time</td>
+            <td>@ds.EndTime.ToString("hh:mm tt")</td>
+        </tr>
+        <tr>
+            <td>Total KM</td>
+            <td>@totalKm</td>
+            <td>Days</td>
+            <td>@((ds.EndTime - ds.StartTime).Days)</td>
+            <td></td>
+            <td></td>
+        </tr>
+    </table>
+
+    <!-- CHARGES -->
+    <table>
+        <tr>
+            <th>Particulars</th>
+            <th>Qty</th>
+            <th>Rate</th>
+            <th>Total</th>
+        </tr>
+
+        <tr>
+            <td>Base (@Model.RateCard.BaseKM KM / @Model.RateCard.BaseHours HRS)</td>
+            <td>1</td>
+            <td>@Model.RateCard.BasePrice</td>
+            <td>@Model.RateCard.BasePrice</td>
+        </tr>
+
+        <tr>
+            <td>Extra KM</td>
+            <td>@extraKm</td>
+            <td>@Model.RateCard.ExtraKMRate</td>
+            <td>@(extraKm * Model.RateCard.ExtraKMRate)</td>
+        </tr>
+
+        <tr>
+            <td>Extra Hours</td>
+            <td>@extraHours</td>
+            <td>@Model.RateCard.ExtraHourRate</td>
+            <td>@(extraHours * Model.RateCard.ExtraHourRate)</td>
+        </tr>
+
+        <tr>
+            <td>Driver Allowance</td>
+            <td></td>
+            <td></td>
+            <td>@Model.DriverAllowance</td>
+        </tr>
+
+        <tr>
+            <td>Toll + Parking</td>
+            <td></td>
+            <td></td>
+            <td>@(ds.TollCharges + ds.ParkingCharges)</td>
+        </tr>
+
+        <tr>
+            <td colspan="3" class="text-right"><strong>Total</strong></td>
+            <td><strong>@Model.TotalAmount</strong></td>
+        </tr>
+    </table>
+
+    <!-- FOOTER -->
+    <table>
+        <tr>
+            <td style="width:65%;">
+                <strong>RUPEES IN WORD</strong><br />
+                @NumberHelper.NumberToWords((int)Model.TotalAmount) Rupees Only
+                    <br /><br /><br />
+                    <br /><br /><br />
+                    <br /><br /><br />
+                <p style="font-size:11px;">
+                    Kms & Hrs will be calculated from office to office.<br />
+                    Cancellation charges ₹1000 compulsory.<br />
+                    Toll & parking paid by party.
+                </p>
+            </td>
+            <td style="width:35%; text-align:center;">
+                    Customers Sign<br /><br /><br /><br /><br /><br />
+                For Sharavani Tours & Travels
+            </td>
+        </tr>
+    </table>
+    </div>
+
+    <div class="spacer"></div>
+    <div class="invoice-footer">
+        <!-- footer -->
+    </div>
+</div>

@@ -3,145 +3,287 @@
 }
 
 <style>
-    /* Content-Specific Styling */
-    .hero-content {
-        color: white;
+    :root {
+        --accent: #f59e0b;
+        --accent-bright: #fbbf24;
+        --glass-dark: rgba(15, 23, 42, 0.7);
+        --glass-light: rgba(255, 255, 255, 0.1);
+        --text-high: #f8fafc;
+        --text-dim: #cbd5e1;
+    }
+
+    section {
+        padding: 100px 0;
+    }
+
+    /* Typography Visibility Fixes */
+    .section-title {
+        font-size: clamp(2.2rem, 5vw, 3.2rem);
+        font-weight: 800;
+        color: #ffffff;
+        letter-spacing: -1px;
+    }
+
+    .text-visible-sub {
+        color: var(--text-dim) !important;
+        font-weight: 400;
+        line-height: 1.6;
+    }
+
+    /* Hero Section Refresh */
+    .hero-wrapper {
+        margin-top: -20px;
+        background: linear-gradient(165deg, #f59e0b 0%, #f97316 100%);
+        border-radius: 0 0 60px 60px;
+        padding: 140px 0 100px 0;
     }
 
     .hero-title {
-        font-size: clamp(2.5rem, 5vw, 4rem);
-        font-weight: 800;
+        font-size: clamp(2.8rem, 6vw, 4.5rem);
+        font-weight: 900;
+        color: #0f172a;
         line-height: 1.1;
-        margin-bottom: 1.5rem;
-        background: linear-gradient(to right, #ffffff, #94a3b8);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
     }
 
-    .feature-badge {
-        display: inline-block;
-        padding: 0.5rem 1.2rem;
-        background: rgba(59, 130, 246, 0.2);
-        border: 1px solid rgba(59, 130, 246, 0.3);
-        border-radius: 50px;
-        color: #60a5fa;
+    .hero-sub {
+        color: #1e293b; /* Darker for orange background */
+        font-size: 1.25rem;
         font-weight: 600;
-        font-size: 0.9rem;
-        margin-bottom: 1rem;
+        max-width: 500px;
+        margin: 20px 0;
     }
 
-    .stats-container {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 1.5rem;
-        margin-top: 3rem;
-        padding-top: 2rem;
-        border-top: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    .stat-item h3 {
-        font-weight: 700;
-        color: #f59e0b;
-        margin-bottom: 0;
-    }
-
-    .stat-item p {
-        font-size: 0.8rem;
-        color: rgba(255, 255, 255, 0.6);
+    /* Badge Visibility Fix */
+    .trust-badge {
+        background: rgba(15, 23, 42, 0.15); /* Dark tint on orange */
+        border: 1px solid rgba(15, 23, 42, 0.2);
+        padding: 12px 24px;
+        border-radius: 100px;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        color: #0f172a; /* Solid black-ish text */
+        font-weight: 800;
         text-transform: uppercase;
-        letter-spacing: 1px;
+        font-size: 0.85rem;
+        letter-spacing: 1.5px;
     }
 
-    .booking-preview {
-        background: rgba(15, 23, 42, 0.3);
-        border-radius: 20px;
-        padding: 1.5rem;
-        border: 1px solid rgba(255, 255, 255, 0.05);
+    /* Service Cards Contrast Fix */
+    .service-card {
+        background: var(--glass-dark);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255,255,255,0.15);
+        padding: 40px 30px;
+        border-radius: 30px;
+        transition: 0.4s;
+        height: 100%;
     }
 
-    /* GSAP hidden states */
-    .reveal {
+        .service-card:hover {
+            border-color: var(--accent-bright);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+
+        .service-card h4 {
+            color: #fff;
+            font-weight: 700;
+            margin-top: 15px;
+        }
+
+        .service-card p {
+            color: var(--text-dim);
+            margin-bottom: 0;
+        }
+
+    /* Icons Visibility */
+    .service-icon-box {
+        font-size: 2rem;
+        background: rgba(255,255,255,0.05);
+        width: 60px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 15px;
+    }
+
+    /* Image Styling */
+    .image-mask {
+        border-radius: 40px;
+        overflow: hidden;
+        border: 4px solid var(--glass-light);
+        box-shadow: 0 40px 80px rgba(0,0,0,0.6);
+    }
+
+    /* Contact Section Visibility */
+    .contact-glass {
+        background: rgba(30, 41, 59, 0.4);
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 40px;
+        padding: 60px 40px;
+    }
+
+    .contact-info-label {
+        color: var(--accent-bright);
+        font-weight: 700;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+    }
+
+    .contact-info-value {
+        color: #fff;
+        font-size: 1.4rem;
+        font-weight: 700;
+    }
+
+    .reveal-item {
         opacity: 0;
+        transform: translateY(30px);
     }
 </style>
 
-<div class="container-fluid">
-    <div class="row align-items-center g-5">
-        <div class="col-lg-7 hero-content">
-            <div class="reveal" id="heroBadge">
-                <span class="feature-badge">✨ 24/7 Premium Service</span>
-            </div>
-
-            <h1 class="hero-title reveal" id="heroTitle">
-                Your Journey, <br />
-                Our Commitment.
-            </h1>
-
-            <p class="lead text-white-50 mb-4 reveal" id="heroLead">
-                Experience the gold standard of travel with SharavaniTours.
-                Whether it's a quick city transfer or a long-distance getaway,
-                our fleet is ready when you are.
-            </p>
-
-            <div class="d-flex gap-3 mb-5 reveal" id="heroActions">
-                <a href="#" class="btn btn-primary btn-lg px-4" style="background: #3b82f6; border:none;">Book Now</a>
-                <a href="#" class="btn btn-outline-light btn-lg px-4">View Fleet</a>
-            </div>
-
-            <div class="stats-container reveal" id="heroStats">
-                <div class="stat-item">
-                    <h3>50k+</h3>
-                    <p>Rides Completed</p>
+<div class="container-fluid p-0">
+    <section class="hero-wrapper">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <div class="trust-badge mb-4 reveal-item">
+                        <span>⭐</span> Top Rated Service in Pune
+                    </div>
+                    <h1 class="hero-title reveal-item">
+                        Experience <span style="color:white; text-shadow: 0 4px 10px rgba(0,0,0,0.1)">Premium</span> Travel.
+                    </h1>
+                    <p class="hero-sub reveal-item">
+                        Ride smart with Sharavani Tours. Safe, sanitized, and punctual professional cab services.
+                    </p>
+                    <div class="d-flex gap-3 mt-4 reveal-item">
+                        <a href="tel:+917387473977" class="btn btn-dark px-5 py-3 fw-bold" style="border-radius:15px">Book Now</a>
+                        <a href="#services" class="btn btn-outline-dark px-4 py-3 fw-bold" style="border-radius:15px">Our Services</a>
+                    </div>
                 </div>
-                <div class="stat-item">
-                    <h3>4.9/5</h3>
-                    <p>User Rating</p>
-                </div>
-                <div class="stat-item">
-                    <h3>15min</h3>
-                    <p>Avg. Pickup</p>
+                <div class="col-lg-6 text-center mt-5 mt-lg-0 reveal-item">
+                    <img src="@Url.Content("~/taxis.png")" class="img-fluid" style="filter: drop-shadow(0 20px 30px rgba(0,0,0,0.2))" />
                 </div>
             </div>
         </div>
+    </section>
 
-        <div class="col-lg-5 reveal" id="heroVisual">
-            <div class="booking-preview">
-                <h5 class="text-white mb-4">Quick Estimate</h5>
-                <form>
-                    <div class="mb-3">
-                        <label class="form-label text-white-50 small">Pickup Location</label>
-                        <input type="text" class="form-control bg-dark border-secondary text-white" placeholder="Enter city or airport">
+    <div class="container">
+        <section id="about">
+            <div class="row align-items-center g-5">
+                <div class="col-lg-6 reveal-item">
+                    <div class="image-mask">
+                        <img src="@Url.Content("~/driver.png")" class="img-fluid" />
                     </div>
-                    <div class="mb-4">
-                        <label class="form-label text-white-50 small">Destination</label>
-                        <input type="text" class="form-control bg-dark border-secondary text-white" placeholder="Where to?">
+                </div>
+                <div class="col-lg-6 reveal-item">
+                    <h2 class="section-title">Safety & Peace of Mind.</h2>
+                    <p class="text-visible-sub fs-5 mb-4">
+                        Sharavani Tours offers more than just a ride—we offer a commitment to your schedule and safety.
+                    </p>
+                    <div class="row g-4">
+                        <div class="col-sm-6">
+                            <div class="d-flex align-items-start gap-3">
+                                <span class="fs-3">✅</span>
+                                <div>
+                                    <h5 class="text-white mb-1">Verified Staff</h5>
+                                    <p class="text-visible-sub small">All drivers undergo strict background and identity checks.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="d-flex align-items-start gap-3">
+                                <span class="fs-3">✅</span>
+                                <div>
+                                    <h5 class="text-white mb-1">24/7 Support</h5>
+                                    <p class="text-visible-sub small">Ready to pick you up at any hour of the day or night.</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <button type="button" class="btn btn-warning w-100 fw-bold py-2">GET PRICE</button>
-                </form>
+                </div>
             </div>
-        </div>
+        </section>
+
+        <section id="services">
+            <div class="text-center mb-5">
+                <h2 class="section-title reveal-item">Our Premium Services</h2>
+                <p class="text-visible-sub reveal-item">Tailored transportation solutions for every need</p>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-md-6 col-lg-3 reveal-item">
+                    <div class="service-card text-center">
+                        <div class="service-icon-box mx-auto">🏙️</div>
+                        <h4>Local Rides</h4>
+                        <p>Effortless city travel for your daily commute or errands.</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3 reveal-item">
+                    <div class="service-card text-center">
+                        <div class="service-icon-box mx-auto">🛣️</div>
+                        <h4>Outstation</h4>
+                        <p>Comfortable long-distance travel to any destination.</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3 reveal-item">
+                    <div class="service-card text-center">
+                        <div class="service-icon-box mx-auto">✈️</div>
+                        <h4>Airport</h4>
+                        <p>Timely pickups and drops for a stress-free flight.</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3 reveal-item">
+                    <div class="service-card text-center">
+                        <div class="service-icon-box mx-auto">💼</div>
+                        <h4>Corporate</h4>
+                        <p>Professional travel management for your business team.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="reveal-item">
+            <div class="contact-glass text-center">
+                <h2 class="section-title mb-5">Contact Us</h2>
+                <div class="row justify-content-center g-5">
+                    <div class="col-md-4">
+                        <span class="contact-info-label">Call us at</span>
+                        <div class="contact-info-value">+91 73874 73977</div>
+                    </div>
+                    <div class="col-md-4">
+                        <span class="contact-info-label">Location</span>
+                        <div class="contact-info-value">Pune, Maharashtra</div>
+                    </div>
+                    <div class="col-md-4">
+                        <span class="contact-info-label">Email Support</span>
+                        <div class="contact-info-value">support@sharavanitours.com</div>
+                    </div>
+                </div>
+            </div>
+        </section>
     </div>
 </div>
 
 @section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
     <script>
-        // Local GSAP Animations for this page
-        document.addEventListener('DOMContentLoaded', () => {
-            const pageTimeline = gsap.timeline({ delay: 1.5 }); // Starts after layout animations
+        document.addEventListener("DOMContentLoaded", () => {
+            gsap.registerPlugin(ScrollTrigger);
 
-            pageTimeline
-                .to('#heroBadge', { opacity: 1, y: 0, duration: 0.6 })
-                .to('#heroTitle', { opacity: 1, y: 0, duration: 0.8, ease: "back.out(1.7)" }, "-=0.4")
-                .to('#heroLead', { opacity: 1, y: 0, duration: 0.6 }, "-=0.6")
-                .to('#heroActions', { opacity: 1, x: 0, duration: 0.5 }, "-=0.4")
-                .to('#heroVisual', { opacity: 1, scale: 1, duration: 0.8, ease: "power2.out" }, "-=0.8")
-                .to('.stat-item', {
+            gsap.utils.toArray(".reveal-item").forEach((item) => {
+                gsap.to(item, {
+                    scrollTrigger: {
+                        trigger: item,
+                        start: "top 90%",
+                    },
                     opacity: 1,
                     y: 0,
-                    duration: 0.5,
-                    stagger: 0.2,
-                    onStart: () => document.getElementById('heroStats').style.opacity = 1
-                }, "-=0.2");
+                    duration: 0.8,
+                    ease: "power2.out"
+                });
+            });
         });
     </script>
 }

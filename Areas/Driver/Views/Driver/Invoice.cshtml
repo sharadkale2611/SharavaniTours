@@ -228,11 +228,26 @@
 
         <div class="right">
             <table>
-                <tr><td>Date</td><td>31/01/2026</td></tr>
-                <tr><td>Invoice No</td><td>3329</td></tr>
-                <tr><td>Itinerary Code</td><td>-</td></tr>
-                <tr><td>Duty Slip No</td><td>390</td></tr>
-                <tr><td>Booked By</td><td>Mr. Devkar Sir</td></tr>
+                <tr>
+                    <td>Date</td>
+                    <td>@Model.BookedDate.ToString("dd/MM/yyyy")</td>
+                </tr>
+                <tr>
+                    <td>Invoice No</td>
+                    <td>@Model.Id</td>
+                </tr>
+                <tr>
+                    <td>Itinerary Code</td>
+                    <td>@Model.ItineraryCode</td>
+                </tr>
+                <tr>
+                    <td>Duty Slip No</td>
+                    <td>@Model.DutySlip?.Id</td>
+                </tr>
+                <tr>
+                    <td>Booked By</td>
+                    <td>@Model.BookedBy</td>
+                </tr>
             </table>
         </div>
     </div>
@@ -247,15 +262,15 @@
 
         <div class="col">
             <div class="title">User Details</div>
-            <p>Name: Mr. Santosh Moringare</p>
-            <p>Mob: 8378979262</p>
+            <p>Name: @Model.ClientUser?.FullName</p>
+            <p>Mob: @Model.ClientUser?.MobileNo</p>
         </div>
 
         <div class="col">
             <div class="title">Cab Details</div>
-            <p>Type: Dzire</p>
-            <p>No: MH12PQ2602</p>
-            <p>Driver: Ashok</p>
+            <p>Type: @Model.Vehicle?.Type</p>
+            <p>No: @Model.Vehicle?.VehicleNo</p>
+            <p>Driver: @Model.Driver?.FullName</p>
         </div>
     </div>
 
@@ -263,25 +278,25 @@
     <table class="trip-details">
         <tr>
             <td>Start Kms</td>
-            <td>10200</td>
+            <td>@ds.StartKM</td>
             <td>Start Date</td>
-            <td>17/01/2026</td>
+            <td>@ds.StartTime.ToString("dd/MM/yyyy")</td>
             <td>Start Time</td>
-            <td>7:30am</td>
+            <td>@ds.StartTime.ToString("hh:mm tt")</td>
         </tr>
         <tr>
             <td>Close Kms</td>
-            <td>10382</td>
-            <td>End Date</td>
-            <td>17/01/2026</td>
-            <td>End Time</td>
-            <td>8:00pm</td>
+            <td>@ds.EndKM</td>
+            <td>Close Date</td>
+            <td>@ds.EndTime.ToString("dd/MM/yyyy")</td>
+            <td>Close Time</td>
+            <td>@ds.EndTime.ToString("hh:mm tt")</td>
         </tr>
         <tr>
             <td>Total</td>
-            <td>182</td>
+            <td>@totalKm</td>
             <td>Days</td>
-            <td>1</td>
+            <td>@((ds.EndTime - ds.StartTime).Days)</td>
             <td></td>
             <td></td>
         </tr>
@@ -296,13 +311,44 @@
             <th>Total</th>
         </tr>
 
-        <tr><td>FIRST 80KM / 8HOURS</td><td>1</td><td>2000</td><td>2000</td></tr>
-        <tr><td>Extra Kms</td><td>102</td><td>13</td><td>1326</td></tr>
-        <tr><td>Extra Hrs</td><td>4</td><td>85</td><td>340</td></tr>
+        <tr>
+            <td>FIRST @Model.RateCard.BaseKM KM / @Model.RateCard.BaseHours HRS</td>
+            <td>1</td>
+            <td>@Model.RateCard.BasePrice</td>
+            <td>@Model.RateCard.BasePrice</td>
+        </tr>
+
+        <tr>
+            <td>Extra Kms</td>
+            <td>@extraKm</td>
+            <td>@Model.RateCard.ExtraKMRate</td>
+            <td>@(extraKm * Model.RateCard.ExtraKMRate)</td>
+        </tr>
+
+        <tr>
+            <td>Extra Hrs</td>
+            <td>@extraHours</td>
+            <td>@Model.RateCard.ExtraHourRate</td>
+            <td>@(extraHours * Model.RateCard.ExtraHourRate)</td>
+        </tr>
+
+        <tr>
+            <td>Driver Allowance</td>
+            <td></td>
+            <td></td>
+            <td>@Model.DriverAllowance</td>
+        </tr>
+
+        <tr>
+            <td>Toll + Parking</td>
+            <td></td>
+            <td></td>
+            <td>@(ds.TollCharges + ds.ParkingCharges)</td>
+        </tr>
 
         <tr>
             <td colspan="3" class="text-right"><strong>Total Amount</strong></td>
-            <td><strong>3666</strong></td>
+            <td><strong>@Model.TotalAmount</strong></td>
         </tr>
     </table>
 
@@ -310,7 +356,7 @@
     <div class="bottom-section">
         <div class="bottom-left">
             <p><strong>RUPEES IN WORD</strong></p>
-            <p style="margin-bottom:100px;">Three Thousand Six Hundred Sixty Six Rupees Only</p>
+            <p style="margin-bottom:100px;">@NumberHelper.NumberToWords((int)Model.TotalAmount) Rupees Only</p>
 
             <p class="note">
                 Kms & Hrs will be calculated from office to office.<br />

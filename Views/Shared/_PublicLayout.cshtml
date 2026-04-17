@@ -157,8 +157,9 @@
 
     <nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNavbar">
         <div class="container">
-            <a class="navbar-brand" asp-controller="Home" asp-action="Index">
-                <span class="brand-icon">🚕</span> SharavaniTours
+            <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
+                @* <span class="brand-icon">🚕</span> *@
+                <img src="~/logo.png" style="width:80px" /> SharavaniTours
             </a>
 
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarToggler">
@@ -175,10 +176,17 @@
     </nav>
 
     <div class="main-content" style="padding-top: 100px;">
-        <div class="content-wrapper">
-            <div class="glass-card" id="mainCard">
+        <div class="">
+            @if (ViewData["Title"]?.ToString() == "Premium Travel Solutions")
+            {
                 @RenderBody()
-            </div>
+            }
+            else
+            {
+                <div class="glass-card" id="mainCard">
+                    @RenderBody()
+                </div>
+            }
         </div>
     </div>
 

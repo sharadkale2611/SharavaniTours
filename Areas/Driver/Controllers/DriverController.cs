@@ -173,15 +173,87 @@ namespace SharavaniTours.Areas.Driver.Controllers
 		public IActionResult Invoice(int id)
 		{
 			var trip = _context.Trips
-				.Include(t => t.Client)
-				.Include(t => t.Vehicle)
-				.Include(t => t.RateCard)
-				.Include(t => t.DutySlip)
+				.Include(x => x.DutySlip)
+				.Include(x => x.Vehicle)
+				.Include(x => x.Driver)
+				.Include(x => x.Client)
+				.Include(x => x.ClientUser)
+				.Include(x => x.RateCard)
 				.FirstOrDefault(t => t.Id == id);
 
 			if (trip == null) return NotFound();
 
 			return View(trip);
 		}
+
+		public IActionResult InvoiceReport(InvoiceFilterVM filter)
+		{
+			var query = _context.Trips
+				.Include(x => x.DutySlip)
+				.Include(x => x.Vehicle)
+				.Include(x => x.Driver)
+				.Include(x => x.Client)
+				.Include(x => x.ClientUser)
+				.Include(x => x.RateCard)
+				.Where(x => x.Status == "Completed");
+
+			//  Filters
+
+			if (filter.FromDate.HasValue)
+				query = query.Where(x => x.BookedDate >= filter.FromDate);
+
+			if (filter.ToDate.HasValue)
+				query = query.Where(x => x.BookedDate <= filter.ToDate);
+
+			if (!string.IsNullOrEmpty(filter.DriverId))
+				query = query.Where(x => x.DriverId == filter.DriverId);
+
+			if (filter.VehicleId.HasValue)
+				query = query.Where(x => x.VehicleId == filter.VehicleId);
+
+			if (filter.ClientUserId.HasValue)
+				query = query.Where(x => x.ClientUserId == filter.ClientUserId);
+
+			filter.Trips = query.OrderByDescending(x => x.BookedDate).ToList();
+
+			return View(filter);
+		}
+
+		public IActionResult DownloadInvoiceReport(InvoiceFilterVM filter)
+		{
+			var query = _context.Trips
+				.Include(x => x.DutySlip)
+				.Include(x => x.Vehicle)
+				.Include(x => x.Driver)
+				.Include(x => x.Client)
+				.Include(x => x.ClientUser)
+				.Include(x => x.RateCard)
+				.Where(x => x.Status == "Completed");
+
+			if (filter.FromDate.HasValue)
+				query = query.Where(x => x.BookedDate >= filter.FromDate);
+
+			if (filter.ToDate.HasValue)
+				query = query.Where(x => x.BookedDate <= filter.ToDate);
+
+			if (!string.IsNullOrEmpty(filter.DriverId))
+				query = query.Where(x => x.DriverId == filter.DriverId);
+
+			if (filter.VehicleId.HasValue)
+				query = query.Where(x => x.VehicleId == filter.VehicleId);
+
+			if (filter.ClientUserId.HasValue)
+				query = query.Where(x => x.ClientUserId == filter.ClientUserId);
+
+
+			var trips = query.ToList();
+
+			return new Rotativa.AspNetCore.ViewAsPdf("InvoiceReportPdf", trips)
+			{
+				FileName = "InvoiceReport.pdf",
+				PageSize = Rotativa.AspNetCore.Options.Size.A4
+			};
+		}
+
 	}
 }

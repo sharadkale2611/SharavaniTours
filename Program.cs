@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Rotativa.AspNetCore;
 using SharavaniTours.Data;
 using SharavaniTours.Models;
 using SharavaniTours.Services;
@@ -21,12 +22,14 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 
 
 builder.Services.AddScoped<BillingService>();
-
+builder.Services.AddScoped<DatabaseResetService>();
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();	
 
 var app = builder.Build();
+
+RotativaConfiguration.Setup(app.Environment.WebRootPath, "Rotativa");
 
 using (var scope = app.Services.CreateScope())
 {

@@ -1,0 +1,19 @@
+﻿@using SharavaniTours.Models
+@model List<Trip>
+
+@{
+    Layout = null;
+}
+
+<style>
+    .invoice-page {
+        page-break-after: always;
+    }
+</style>
+
+@foreach (var trip in Model)
+{
+    <div class="invoice-page">
+        @await Html.PartialAsync("_InvoicePartial", trip)
+    </div>
+}
