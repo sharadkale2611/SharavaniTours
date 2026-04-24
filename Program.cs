@@ -10,7 +10,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-	options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+	options.UseSqlServer(builder.Configuration.GetConnectionString("LiveConnection")));
 
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 {
@@ -37,6 +37,9 @@ using (var scope = app.Services.CreateScope())
 
 	await DbSeeder.SeedRoles(services);   //  FIRST
 	await DbSeeder.SeedAdmin(services);   //  SECOND
+	await DbSeeder.SeedVehicleTypes(services); // Third
+	await DbSeeder.SeedClients(services); // Fourth
+	
 }
 
 // Configure the HTTP request pipeline.

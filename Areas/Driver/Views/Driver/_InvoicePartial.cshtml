@@ -5,10 +5,15 @@
     var ds = Model.DutySlip;
 
     var totalKm = ds.EndKM - ds.StartKM;
-    var extraKm = Math.Max(0, totalKm - Model.RateCard.BaseKM);
+
+    // ✅ FIX: handle nullable values
+    var baseKm = Model.RateCard.BaseKM ?? 0;
+    var baseHours = Model.RateCard.BaseHours ?? 0;
 
     var totalHours = (decimal)(ds.EndTime - ds.StartTime).TotalHours;
-    var extraHours = Math.Max(0, totalHours - Model.RateCard.BaseHours);
+
+    var extraKm = Math.Max(0, totalKm - baseKm);
+    var extraHours = Math.Max(0, totalHours - baseHours);
 }
 
 <style>
@@ -97,7 +102,7 @@
                 <img src="https://localhost:7287/logo.png" style="height:80px;" />
             </td>
             <td class="text-center">
-                <h3 style="margin:0;">SHARAVANI TOURS & TRAVELS</h3>
+                <h3 style="margin:0;">SHRAVANI TOURS & TRAVELS</h3>
                 <p style="margin:0;font-size:12px;">
                     Sr.No. 204/9, Siddhivinayak Colony, Road No. 4, Papde Wasti,<br />
                     Fursungi 412308, Contact No. 07387473977
@@ -165,8 +170,8 @@
             </td>
             <td>
                 <div class="title">Cab Details</div>
-                Type: @Model.Vehicle?.Type<br />
-                No: @Model.Vehicle?.VehicleNo<br />
+                Type: @Model.RequestedVehicle?.VehicleType.Name<br />
+                    No: @Model.RequestedVehicle?.VehicleNo<br />
                 Driver: @Model.Driver?.FullName
             </td>
         </tr>
@@ -267,7 +272,7 @@
             </td>
             <td style="width:35%; text-align:center;">
                     Customers Sign<br /><br /><br /><br /><br /><br />
-                For Sharavani Tours & Travels
+                For Shravani Tours & Travels
             </td>
         </tr>
     </table>

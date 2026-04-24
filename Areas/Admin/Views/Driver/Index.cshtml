@@ -105,6 +105,7 @@
             <tr>
                 <th>Full Name</th>
                 <th>Email Address</th>
+                <th>Mobile Number</th>
                 <th class="text-end">Actions</th>
             </tr>
         </thead>
@@ -118,11 +119,15 @@
                     <td class="text-slate-light">
                         <i class="bi bi-envelope me-1"></i> @d.Email
                     </td>
+                    <td class="text-slate-light">
+                        <i class="bi bi-phone me-1"></i> @(d.PhoneNumber??"---")
+                    </td>
+
                     <td class="text-end">
                         <div class="d-flex justify-content-end gap-2">
-                            <a asp-action="Details" asp-route-id="@d.Id" class="action-btn btn-view" title="View Details">
-                                <i class="bi bi-eye"></i>
-                            </a>
+                            @* <a asp-action="Details" asp-route-id="@d.Id" class="action-btn btn-view" title="View Details"> *@
+                            @*     <i class="bi bi-eye"></i> *@
+                            @* </a> *@
 
                             <a asp-action="Edit" asp-route-id="@d.Id" class="action-btn btn-edit" title="Edit Driver">
                                 <i class="bi bi-pencil-square"></i>

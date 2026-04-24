@@ -1,4 +1,5 @@
-﻿@model IEnumerable<SharavaniTours.Models.Trip>
+﻿@using SharavaniTours.Models;
+@model IEnumerable<SharavaniTours.Models.Trip>
 
 @{
     ViewData["Title"] = "My Assignments";
@@ -138,11 +139,11 @@
                         </div>
                     </td>
                     <td>
-                        @if (t.Status == "Pending")
+                        @if (t.Status == TripStatus.Pending)
                         {
                             <span class="text-warning fw-bold"><i class="bi bi-clock-history me-1"></i> @t.Status</span>
                         }
-                        else if (t.Status == "Running")
+                        else if (t.Status == TripStatus.Started)
                         {
                             <span class="text-info fw-bold"><i class="bi bi-geo-alt-fill me-1"></i> @t.Status</span>
                         }
@@ -152,13 +153,20 @@
                         }
                     </td>
                     <td class="text-end">
-                        @if (t.Status == "Pending")
+                        <a asp-action="Details" asp-route-id="@t.Id" class="driver-btn btn-end" title="View Details">
+                            <i class="bi bi-eye"></i>
+                        </a>
+
+                        @if (t.Status == TripStatus.Pending)
                         {
-                            <button type="button" class="driver-btn btn-start" onclick="openStartModal('@t.Id', '@t.ItineraryCode')">
-                                <i class="bi bi-play-fill me-1"></i> Start Trip
+                            <button class="btn btn-start"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#startModal"
+                                    onclick="openStartModal('@t.Id', '@t.RequestedVehicleId', '@t.ItineraryCode')">
+                                Start Trip
                             </button>
                         }
-                        else if (t.Status == "Running")
+                        else if (t.Status == TripStatus.Started)
                         {
                             <button type="button" class="driver-btn btn-end"
                                     onclick="openEndModal('@t.Id', '@t.ItineraryCode', @(t.DutySlip?.StartKM ?? 0))">
@@ -189,7 +197,19 @@
                 </div>
                 <div class="modal-body">
                     <input type="hidden" name="id" id="startTripId" />
-                    <label class="form-label text-slate-light small fw-bold text-uppercase">Odometer Reading (Start KM)</label>
+                    <!-- ✅ VEHICLE DROPDOWN -->
+                    <label class="form-label text-slate-light small fw-bold text-uppercase">Select Vehicle</label>
+                    <select name="sentVehicleId" id="sentVehicleDropdown" class="form-control form-control-glass" required>
+                        <option value="">-- Select Vehicle --</option>
+
+                        @foreach (var v in ViewBag.Vehicles)
+                        {
+                            <option value="@v.Id" data-type="@v.VehicleType.Name">
+                                @v.VehicleNo (@v.VehicleType.Name)
+                            </option>
+                        }
+                    </select>
+                    <label class="form-label text-slate-light small fw-bold text-uppercase">Meter Reading (Start KM)</label>
                     <input type="number" name="startKM" class="form-control form-control-glass" required min="0" />
                 </div>
                 <div class="modal-footer">
@@ -251,15 +271,22 @@
 
 @section Scripts {
     <script>
-        function openStartModal(id, code) {
+                function openStartModal(id, requestedVehicleId, code) {
             const modalEl = document.getElementById('startModal');
 
             // Fill data
             document.getElementById('startTripId').value = id;
             document.getElementById('startItinerary').innerText = code;
 
-            // IMPORTANT: Move the modal element to the end of <body>
-            // This stops the .admin-card from "trapping" the modal behind it.
+            let dropdown = document.getElementById("sentVehicleDropdown");
+
+            // ✅ Preselect requested vehicle
+            if (requestedVehicleId && requestedVehicleId !== "null") {
+                dropdown.value = requestedVehicleId;
+            } else {
+                dropdown.value = "";
+            }
+
             document.body.appendChild(modalEl);
 
             const myModal = new bootstrap.Modal(modalEl);

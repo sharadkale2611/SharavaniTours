@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SharavaniTours.Data;
 
@@ -11,9 +12,11 @@ using SharavaniTours.Data;
 namespace SharavaniTours.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260422093412_column_name_changed_for_trips")]
+    partial class column_name_changed_for_trips
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -412,12 +415,12 @@ namespace SharavaniTours.Data.Migrations
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("VehicleTypeId")
+                    b.Property<int>("VehicleId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("VehicleTypeId");
+                    b.HasIndex("VehicleId");
 
                     b.ToTable("RateCards");
                 });
@@ -529,6 +532,10 @@ namespace SharavaniTours.Data.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
@@ -536,33 +543,11 @@ namespace SharavaniTours.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("VehicleTypeId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.HasIndex("DriverId");
 
-                    b.HasIndex("VehicleTypeId");
-
                     b.ToTable("Vehicles");
-                });
-
-            modelBuilder.Entity("SharavaniTours.Models.VehicleType", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("VehicleTypes");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -640,13 +625,13 @@ namespace SharavaniTours.Data.Migrations
 
             modelBuilder.Entity("SharavaniTours.Models.RateCard", b =>
                 {
-                    b.HasOne("SharavaniTours.Models.VehicleType", "VehicleType")
-                        .WithMany("RateCards")
-                        .HasForeignKey("VehicleTypeId")
+                    b.HasOne("SharavaniTours.Models.Vehicle", "Vehicle")
+                        .WithMany()
+                        .HasForeignKey("VehicleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("VehicleType");
+                    b.Navigation("Vehicle");
                 });
 
             modelBuilder.Entity("SharavaniTours.Models.Trip", b =>
@@ -704,15 +689,7 @@ namespace SharavaniTours.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("SharavaniTours.Models.VehicleType", "VehicleType")
-                        .WithMany("Vehicles")
-                        .HasForeignKey("VehicleTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Driver");
-
-                    b.Navigation("VehicleType");
                 });
 
             modelBuilder.Entity("SharavaniTours.Models.Client", b =>
@@ -723,13 +700,6 @@ namespace SharavaniTours.Data.Migrations
             modelBuilder.Entity("SharavaniTours.Models.Trip", b =>
                 {
                     b.Navigation("DutySlip");
-                });
-
-            modelBuilder.Entity("SharavaniTours.Models.VehicleType", b =>
-                {
-                    b.Navigation("RateCards");
-
-                    b.Navigation("Vehicles");
                 });
 #pragma warning restore 612, 618
         }

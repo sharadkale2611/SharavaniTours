@@ -1,4 +1,5 @@
 ﻿@model IEnumerable<SharavaniTours.Models.RateCard>
+@using SharavaniTours.Models
 
 @{
     ViewData["Title"] = "Pricing Strategy";
@@ -29,14 +30,13 @@
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
             background: transparent;
             font-size: 0.85rem;
-            color:#eee !important;
+            color: #eee !important;
         }
 
         .table-glass tr:hover td {
             background: rgba(255, 255, 255, 0.02);
         }
 
-    /* Column Grouping Highlights */
     .col-base {
         color: #f8fafc;
         font-weight: 600;
@@ -56,7 +56,30 @@
         margin-right: 2px;
     }
 
-    /* Action Icon Buttons */
+    /* Type Badge */
+    .badge-type {
+        font-size: 0.65rem;
+        padding: 3px 8px;
+        border-radius: 20px;
+        font-weight: 700;
+    }
+
+    .badge-local {
+        background: rgba(16, 185, 129, 0.15);
+        color: #10b981;
+    }
+
+    .badge-outstation {
+        background: rgba(59, 130, 246, 0.15);
+        color: #3b82f6;
+    }
+
+    .muted-value {
+        color: #64748b;
+        font-style: italic;
+    }
+
+    /* Action Buttons */
     .action-btn {
         width: 30px;
         height: 30px;
@@ -111,42 +134,107 @@
         <thead>
             <tr>
                 <th>Plan Name</th>
-                <th>Base KM/Hrs</th>
-                <th>Base Price</th>
-                <th>Extra KM</th>
-                <th>Extra Hr</th>
-                <th>Out. Min KM</th>
-                <th>Out. Rate</th>
+                <th>Vehicle</th>
+                <th>Type</th>
+                <th>Base Package</th>
+                <th>Extra Charges</th>
+                <th>Outstation</th>
+                <th>Additional</th>
                 <th class="text-end">Actions</th>
             </tr>
         </thead>
+
         <tbody>
             @foreach (var r in Model)
             {
                 <tr>
+                    <!-- PLAN -->
                     <td class="col-base">
-                        <i class="bi bi-tag-fill me-2 text-primary" style="font-size: 0.8rem;"></i>@r.Name
+                        <i class="bi bi-tag-fill me-2 text-primary" style="font-size: 0.8rem;"></i>
+                        @r.Name
                     </td>
+
+                    <!-- VEHICLE -->
                     <td>
-                        <span class="text-white">@r.BaseKM <small class="text-slate-light">KM</small></span>
-                        <span class="mx-1 text-slate-light">/</span>
-                        <span class="text-white">@r.BaseHours <small class="text-slate-light">Hrs</small></span>
+                        <span class="text-white">@r.VehicleType?.Name</span>
                     </td>
-                    <td class="col-base">
-                        <span class="currency-symbol">₹</span>@r.BasePrice
+
+                    <!-- TYPE -->
+                    <td>
+                        @if (r.TripType == TripType.Local)
+                        {
+                            <span class="badge-type badge-local">Local</span>
+                        }
+                        else
+                        {
+                            <span class="badge-type badge-outstation">Outstation</span>
+                        }
                     </td>
-                    <td class="col-extra">
-                        <span class="currency-symbol">₹</span>@r.ExtraKMRate
+
+                    <!-- BASE -->
+                    <td>
+                        @if (r.TripType == TripType.Local)
+                        {
+                            <div>
+                                <span class="text-white">@r.BaseKM</span>
+                                <small class="text-slate-light">KM</small>
+                                <span class="mx-1 text-slate-light">/</span>
+                                <span class="text-white">@r.BaseHours</span>
+                                <small class="text-slate-light">Hrs</small>
+                            </div>
+                            <div class="col-base">
+                                <span class="currency-symbol">₹</span>@r.BasePrice
+                            </div>
+                        }
+                        else
+                        {
+                            <span class="muted-value">--</span>
+                        }
                     </td>
-                    <td class="col-extra">
-                        <span class="currency-symbol">₹</span>@r.ExtraHourRate
+
+                    <!-- EXTRA -->
+                    <td>
+                        @if (r.TripType == TripType.Local)
+                        {
+                            <div class="col-extra">
+                                <span class="currency-symbol">₹</span>@r.ExtraKMRate /km
+                            </div>
+                            <div class="col-extra">
+                                <span class="currency-symbol">₹</span>@r.ExtraHourRate /hr
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="col-extra">
+                                <span class="currency-symbol">₹</span>@r.ExtraKMRate /km
+                            </div>
+                        }
                     </td>
-                    <td class="col-outstation">
-                        @r.OutstationPerDayKM <small class="opacity-75">KM</small>
+
+                    <!-- OUTSTATION -->
+                    <td>
+                        @if (r.TripType == TripType.Outstation)
+                        {
+                            <div class="col-outstation">
+                                @r.OutstationPerDayKM <small>KM/day</small>
+                            </div>
+                            <div class="fw-bold col-outstation">
+                                <span class="currency-symbol">₹</span>@r.OutstationRatePerDay
+                            </div>
+                        }
+                        else
+                        {
+                            <span class="muted-value">--</span>
+                        }
                     </td>
-                    <td class="col-outstation fw-bold">
-                        <span class="currency-symbol">₹</span>@r.OutstationRatePerDay
+
+                    <!-- ADDITIONAL -->
+                    <td>
+                        <div>Night: ₹@(r.NightCharges ?? 0)</div>
+                        <div>Driver: ₹@(r.DriverAllowancePerDay ?? 0)</div>
                     </td>
+
+                    <!-- ACTION -->
                     <td class="text-end">
                         <div class="d-flex justify-content-end gap-2">
                             <a asp-action="Edit" asp-route-id="@r.Id" class="action-btn btn-edit" title="Edit Rate">
@@ -164,6 +252,7 @@
                     </td>
                 </tr>
             }
+
             @if (!Model.Any())
             {
                 <tr>

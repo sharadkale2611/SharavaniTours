@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using SharavaniTours.Data;
 using SharavaniTours.Models;
 
 namespace SharavaniTours.Helpers
@@ -42,6 +43,57 @@ namespace SharavaniTours.Helpers
 				}
 			}
 
+			public static async Task SeedVehicleTypes(IServiceProvider serviceProvider)
+			{
+				var context = serviceProvider.GetRequiredService<ApplicationDbContext>();
+
+				// ✅ Ensure DB is ready
+				await context.Database.EnsureCreatedAsync();
+
+				var defaultTypes = new List<string>
+				{
+					"DZire",
+					"Ertiga"
+				};
+
+				foreach (var type in defaultTypes)
+				{
+					if (!context.VehicleTypes.Any(x => x.Name == type))
+					{
+						context.VehicleTypes.Add(new VehicleType
+						{
+							Name = type
+						});
+					}
+				}
+
+				await context.SaveChangesAsync();
+			}
+
+			public static async Task SeedClients(IServiceProvider serviceProvider)
+			{
+				var context = serviceProvider.GetRequiredService<ApplicationDbContext>();
+
+				// ✅ Check if client already exists (by GST - best unique field)
+				var gst = "27AAACG1376N1ZC";
+
+				var existingClient = context.Clients
+					.FirstOrDefault(x => x.GST == gst);
+
+				if (existingClient == null)
+				{
+					context.Clients.Add(new Client
+					{
+						Name = "Kansai Nerolac Paints Ltd",
+						GST = gst,
+						Address = "28th Floor, A - Wing, Marathon Futurex, NM Joshi Marg, Lower Parel, Mumbai, Maharashtra 400013",
+						CreatedAt = DateTime.Now,
+						IsDeleted = false
+					});
+
+					await context.SaveChangesAsync();
+				}
+			}
 
 		}
 	}

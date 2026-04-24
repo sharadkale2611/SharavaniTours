@@ -76,9 +76,11 @@
             </div>
 
             <div class="col-md-6">
-                <label asp-for="Type" class="form-label">Vehicle Type</label>
-                <input asp-for="Type" class="form-control-glass w-100" placeholder="e.g. Sedan / SUV / Bus" />
-                <span asp-validation-for="Type" class="text-danger small"></span>
+                <label asp-for="VehicleTypeId" class="form-label">Vehicle Type</label>
+                <select asp-for="VehicleTypeId" asp-items="ViewBag.VehicleTypes" class="form-control-glass form-select">
+                    <option value="">Select Vehicle type</option>
+                </select>
+                <span asp-validation-for="VehicleTypeId" class="text-danger small"></span>
             </div>
 
             <div class="col-md-6">

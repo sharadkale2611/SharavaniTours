@@ -5,6 +5,8 @@ using System.Security.Claims;
 using Microsoft.EntityFrameworkCore;
 using SharavaniTours.Models;
 using SharavaniTours.Services;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace SharavaniTours.Areas.Driver.Controllers
 {
@@ -14,11 +16,14 @@ namespace SharavaniTours.Areas.Driver.Controllers
 	{
 		private readonly ApplicationDbContext _context;
 		private readonly BillingService _billing;
+		private readonly UserManager<ApplicationUser> _userManager;
 
-		public DriverController(ApplicationDbContext context, BillingService billing)
+
+		public DriverController(ApplicationDbContext context, BillingService billing, UserManager<ApplicationUser> userManager)
 		{
 			_context = context;
 			_billing = billing;
+			_userManager = userManager;
 		}
 
 		// =======================
@@ -29,14 +34,41 @@ namespace SharavaniTours.Areas.Driver.Controllers
 			var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
 			var trips = _context.Trips
-				.Where(t => t.DriverId == userId
-					  //&& (t.Status == "Pending" || t.Status == "Running")
-					  )
+				.Where(t => t.DriverId == userId)
 				.Include(t => t.Client)
 				.Include(t => t.DutySlip)
+				.Include(t => t.RequestedVehicle)
+				.Include(t => t.SentVehicle)
+					.ThenInclude(v => v.VehicleType) // 🔥 FIX
+				.ToList();
+
+			ViewBag.Vehicles = _context.Vehicles
+				.Include(v => v.VehicleType) // 🔥 FIX
 				.ToList();
 
 			return View(trips);
+		}
+
+		// =======================
+		// DETAILS
+		// =======================
+		public IActionResult Details(int id)
+		{
+			var trip = _context.Trips
+				.Include(t => t.Client)
+				.Include(t => t.ClientUser)
+				.Include(t => t.Driver)
+				.Include(t => t.RequestedVehicle)
+				.Include(t => t.SentVehicle)
+					.ThenInclude(v => v.VehicleType)
+				.Include(t => t.RateCard)
+				.Include(t => t.DutySlip)
+				.FirstOrDefault(t => t.Id == id);
+
+			if (trip == null)
+				return NotFound();
+
+			return View(trip);
 		}
 
 		// =======================
@@ -46,11 +78,12 @@ namespace SharavaniTours.Areas.Driver.Controllers
 		{
 			var trip = _context.Trips
 				.Include(t => t.DutySlip)
+				.Include(t => t.RequestedVehicle)
 				.FirstOrDefault(t => t.Id == id);
 
 			if (trip == null) return NotFound();
 
-			if (trip.Status == "Running" || trip.Status == "Completed")
+			if (trip.Status == TripStatus.Started || trip.Status == TripStatus.Completed)
 			{
 				TempData["Error"] = "Trip already started or completed!";
 				return RedirectToAction("MyTrips");
@@ -63,28 +96,59 @@ namespace SharavaniTours.Areas.Driver.Controllers
 		// 🚀 START TRIP (POST)
 		// =======================
 		[HttpPost]
-		public IActionResult StartTrip(int id, int startKM)
+		public IActionResult StartTrip(int id, int startKM, int? sentVehicleId)
 		{
 			var trip = _context.Trips
 				.Include(t => t.DutySlip)
+				.Include(t => t.RequestedVehicle)
 				.FirstOrDefault(t => t.Id == id);
 
 			if (trip == null) return NotFound();
 
-			if (trip.Status == "Running" || trip.Status == "Completed")
+			if (trip.Status == TripStatus.Started || trip.Status == TripStatus.Completed)
 			{
 				TempData["Error"] = "Trip already started!";
 				return RedirectToAction("MyTrips");
 			}
 
-			// 🔥 Create DutySlip if not exists
+			int finalVehicleId;
+
+			if (sentVehicleId.HasValue)
+			{
+				finalVehicleId = sentVehicleId.Value;
+			}
+			else if (trip.RequestedVehicleId.HasValue)
+			{
+				finalVehicleId = trip.RequestedVehicleId.Value;
+			}
+			else
+			{
+				TempData["Error"] = "No vehicle available!";
+				return RedirectToAction("MyTrips");
+			}
+
+			// ✅ Type validation
+			if (trip.RequestedVehicleId != null)
+			{
+				var requested = trip.RequestedVehicle;
+				var selected = _context.Vehicles.Find(finalVehicleId);
+
+				if (requested != null && selected != null &&
+					requested.VehicleTypeId != selected.VehicleTypeId)
+				{
+					TempData["Error"] = "Vehicle type mismatch!";
+					return RedirectToAction("MyTrips");
+				}
+			}
+
+			trip.SentVehicleId = finalVehicleId;
+
+			// ✅ Ensure DutySlip exists
 			if (trip.DutySlip == null)
 			{
 				trip.DutySlip = new DutySlip
 				{
 					TripId = trip.Id,
-
-					// ✅ DEFAULT VALUES (FIX FOR NULL ERROR)
 					DutyType = "Local",
 					PaymentMode = "Cash",
 					ReportingTime = DateTime.Now,
@@ -98,7 +162,7 @@ namespace SharavaniTours.Areas.Driver.Controllers
 			trip.DutySlip.StartKM = startKM;
 			trip.DutySlip.StartTime = DateTime.Now;
 
-			trip.Status = "Running";
+			trip.Status = TripStatus.Started;
 
 			_context.SaveChanges();
 
@@ -116,9 +180,15 @@ namespace SharavaniTours.Areas.Driver.Controllers
 
 			if (trip == null) return NotFound();
 
-			if (trip.Status != "Running")
+			if (trip.Status != TripStatus.Started)
 			{
 				TempData["Error"] = "Trip must be started first!";
+				return RedirectToAction("MyTrips");
+			}
+
+			if (trip.DutySlip == null)
+			{
+				TempData["Error"] = "Duty slip missing!";
 				return RedirectToAction("MyTrips");
 			}
 
@@ -137,16 +207,21 @@ namespace SharavaniTours.Areas.Driver.Controllers
 
 			if (trip == null) return NotFound();
 
-			if (trip.Status != "Running")
+			if (trip.Status != TripStatus.Started)
 			{
 				TempData["Error"] = "Start trip first!";
 				return RedirectToAction("MyTrips");
 			}
 
-			// 🔥 Validation
+			if (trip.DutySlip == null)
+			{
+				TempData["Error"] = "Duty slip missing!";
+				return RedirectToAction("MyTrips");
+			}
+
 			if (endKM <= trip.DutySlip.StartKM)
 			{
-				TempData["Error"] = "End KM must be greater than Start KM!";
+				TempData["Error"] = "End KM must be greater!";
 				return RedirectToAction("EndTrip", new { id });
 			}
 
@@ -157,10 +232,16 @@ namespace SharavaniTours.Areas.Driver.Controllers
 
 			var rate = _context.RateCards.Find(trip.RateCardId);
 
-			// 💰 Billing Calculation
+			if (rate == null)
+			{
+				TempData["Error"] = "Rate card missing!";
+				return RedirectToAction("MyTrips");
+			}
+
+			// 💰 Billing
 			trip.TotalAmount = _billing.Calculate(trip, rate);
 
-			trip.Status = "Completed";
+			trip.Status = TripStatus.Completed;
 
 			_context.SaveChanges();
 
@@ -174,7 +255,8 @@ namespace SharavaniTours.Areas.Driver.Controllers
 		{
 			var trip = _context.Trips
 				.Include(x => x.DutySlip)
-				.Include(x => x.Vehicle)
+				.Include(x => x.SentVehicle)
+					.ThenInclude(v => v.VehicleType) // 🔥 FIX
 				.Include(x => x.Driver)
 				.Include(x => x.Client)
 				.Include(x => x.ClientUser)
@@ -186,19 +268,22 @@ namespace SharavaniTours.Areas.Driver.Controllers
 			return View(trip);
 		}
 
-		public IActionResult InvoiceReport(InvoiceFilterVM filter)
+		// =======================
+		// 📊 REPORT
+		// =======================
+
+		public async Task<IActionResult> InvoiceReport(InvoiceFilterVM filter)
 		{
 			var query = _context.Trips
 				.Include(x => x.DutySlip)
-				.Include(x => x.Vehicle)
+				.Include(x => x.SentVehicle).ThenInclude(v => v.VehicleType)
 				.Include(x => x.Driver)
 				.Include(x => x.Client)
 				.Include(x => x.ClientUser)
 				.Include(x => x.RateCard)
-				.Where(x => x.Status == "Completed");
+				.Where(x => x.Status == TripStatus.Completed);
 
-			//  Filters
-
+			// ✅ Filters
 			if (filter.FromDate.HasValue)
 				query = query.Where(x => x.BookedDate >= filter.FromDate);
 
@@ -209,51 +294,51 @@ namespace SharavaniTours.Areas.Driver.Controllers
 				query = query.Where(x => x.DriverId == filter.DriverId);
 
 			if (filter.VehicleId.HasValue)
-				query = query.Where(x => x.VehicleId == filter.VehicleId);
+				query = query.Where(x => x.SentVehicleId == filter.VehicleId);
 
 			if (filter.ClientUserId.HasValue)
 				query = query.Where(x => x.ClientUserId == filter.ClientUserId);
 
-			filter.Trips = query.OrderByDescending(x => x.BookedDate).ToList();
+			// ✅ Data
+			filter.Trips = await query
+				.OrderByDescending(x => x.BookedDate)
+				.ToListAsync();
+
+			// =========================
+			// 🔽 DROPDOWNS
+			// =========================
+
+			// ✅ Drivers (SAFE FIX)
+			var drivers = await _userManager.GetUsersInRoleAsync("Driver");
+
+			filter.Drivers = drivers.Select(u => new SelectListItem
+			{
+				Value = u.Id,
+				Text = u.FullName
+			});
+
+			// ✅ Vehicles
+			filter.Vehicles = await _context.Vehicles
+				.Select(v => new SelectListItem
+				{
+					Value = v.Id.ToString(),
+					Text = v.VehicleNo
+				})
+				.ToListAsync();
+
+			// ✅ Client Users
+			filter.ClientUsers = await _context.ClientUsers
+				.Select(c => new SelectListItem
+				{
+					Value = c.Id.ToString(),
+					Text = c.FullName
+				})
+				.ToListAsync();
 
 			return View(filter);
 		}
 
-		public IActionResult DownloadInvoiceReport(InvoiceFilterVM filter)
-		{
-			var query = _context.Trips
-				.Include(x => x.DutySlip)
-				.Include(x => x.Vehicle)
-				.Include(x => x.Driver)
-				.Include(x => x.Client)
-				.Include(x => x.ClientUser)
-				.Include(x => x.RateCard)
-				.Where(x => x.Status == "Completed");
 
-			if (filter.FromDate.HasValue)
-				query = query.Where(x => x.BookedDate >= filter.FromDate);
-
-			if (filter.ToDate.HasValue)
-				query = query.Where(x => x.BookedDate <= filter.ToDate);
-
-			if (!string.IsNullOrEmpty(filter.DriverId))
-				query = query.Where(x => x.DriverId == filter.DriverId);
-
-			if (filter.VehicleId.HasValue)
-				query = query.Where(x => x.VehicleId == filter.VehicleId);
-
-			if (filter.ClientUserId.HasValue)
-				query = query.Where(x => x.ClientUserId == filter.ClientUserId);
-
-
-			var trips = query.ToList();
-
-			return new Rotativa.AspNetCore.ViewAsPdf("InvoiceReportPdf", trips)
-			{
-				FileName = "InvoiceReport.pdf",
-				PageSize = Rotativa.AspNetCore.Options.Size.A4
-			};
-		}
 
 	}
 }

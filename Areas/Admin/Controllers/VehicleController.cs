@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -12,10 +13,12 @@ namespace SharavaniTours.Areas.Admin.Controllers
 	public class VehicleController : Controller
 	{
 		private readonly ApplicationDbContext _context;
+		private readonly UserManager<ApplicationUser> _userManager;
 
-		public VehicleController(ApplicationDbContext context)
+		public VehicleController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
 		{
 			_context = context;
+			_userManager = userManager;
 		}
 
 		// =======================
@@ -24,6 +27,7 @@ namespace SharavaniTours.Areas.Admin.Controllers
 		public IActionResult Index()
 		{
 			var vehicles = _context.Vehicles
+				.Include(t => t.VehicleType)
 				.Include(v => v.Driver)
 				.ToList();
 
@@ -33,9 +37,9 @@ namespace SharavaniTours.Areas.Admin.Controllers
 		// =======================
 		// CREATE (GET)
 		// =======================
-		public IActionResult Create()
+		public async Task<IActionResult> Create()
 		{
-			LoadDrivers();
+			await LoadDrivers();
 			return View();
 		}
 
@@ -44,11 +48,11 @@ namespace SharavaniTours.Areas.Admin.Controllers
 		// =======================
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public IActionResult Create(Vehicle vehicle)
+		public async Task<IActionResult> Create(Vehicle vehicle)
 		{
 			if (!ModelState.IsValid)
 			{
-				LoadDrivers();
+				await LoadDrivers();
 				return View(vehicle);
 			}
 
@@ -61,14 +65,14 @@ namespace SharavaniTours.Areas.Admin.Controllers
 		// =======================
 		// EDIT (GET)
 		// =======================
-		public IActionResult Edit(int id)
+		public async Task<IActionResult> Edit(int id)
 		{
 			var vehicle = _context.Vehicles.Find(id);
 
 			if (vehicle == null)
 				return NotFound();
 
-			LoadDrivers(vehicle.DriverId);
+			await LoadDrivers(vehicle.DriverId);
 
 			return View(vehicle);
 		}
@@ -78,11 +82,11 @@ namespace SharavaniTours.Areas.Admin.Controllers
 		// =======================
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public IActionResult Edit(Vehicle model)
+		public async Task<IActionResult> Edit(Vehicle model)
 		{
 			if (!ModelState.IsValid)
 			{
-				LoadDrivers(model.DriverId);
+				await LoadDrivers(model.DriverId);
 				return View(model);
 			}
 
@@ -93,7 +97,7 @@ namespace SharavaniTours.Areas.Admin.Controllers
 
 			// ✅ Safe update
 			vehicle.VehicleNo = model.VehicleNo;
-			vehicle.Type = model.Type;
+			vehicle.VehicleTypeId = model.VehicleTypeId;
 			vehicle.DriverId = model.DriverId;
 
 			_context.SaveChanges();
@@ -138,16 +142,32 @@ namespace SharavaniTours.Areas.Admin.Controllers
 		// =======================
 		// 🔁 COMMON DRIVER DROPDOWN
 		// =======================
-		private void LoadDrivers(string? selectedDriverId = null)
+		private async Task LoadDrivers(string? selectedDriverId = null)
 		{
-			var drivers = _context.Users.ToList();
+			var driverRoleId = await _context.Roles
+				.Where(r => r.Name == "Driver")
+				.Select(r => r.Id)
+				.FirstOrDefaultAsync();
+
+			var drivers = await (from user in _context.Users
+								 join userRole in _context.UserRoles
+									 on user.Id equals userRole.UserId
+								 where userRole.RoleId == driverRoleId
+								 select user)
+								 .ToListAsync();
 
 			ViewBag.DriverList = new SelectList(
 				drivers,
 				"Id",
-				"Email",
+				"FullName",
 				selectedDriverId
 			);
+
+			ViewBag.VehicleTypes = new SelectList(
+					await _context.VehicleTypes.ToListAsync(),
+					"Id",
+					"Name"
+				);
 		}
 	}
 }

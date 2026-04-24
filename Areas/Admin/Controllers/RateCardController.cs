@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using SharavaniTours.Data;
 using SharavaniTours.Models;
 
@@ -21,15 +23,20 @@ namespace SharavaniTours.Areas.Admin.Controllers
 		// =======================
 		public IActionResult Index()
 		{
-			var rates = _context.RateCards.ToList(); // Soft delete filter applied
+			var rates = _context.RateCards
+				.Include(x => x.VehicleType)
+				.Where(x => !x.IsDeleted)
+				.ToList();
+
 			return View(rates);
 		}
 
 		// =======================
 		// CREATE GET
 		// =======================
-		public IActionResult Create()
+		public async Task<IActionResult> Create()
 		{
+			await LoadDropdowns();
 			return View();
 		}
 
@@ -37,10 +44,27 @@ namespace SharavaniTours.Areas.Admin.Controllers
 		// CREATE POST
 		// =======================
 		[HttpPost]
-		public IActionResult Create(RateCard model)
+		public async Task<IActionResult> Create(RateCard model)
 		{
+			await LoadDropdowns();
+
 			if (!ModelState.IsValid)
 				return View(model);
+
+			// 🔥 BUSINESS LOGIC: Clean irrelevant fields
+			if (model.TripType == TripType.Local)
+			{
+				model.OutstationPerDayKM = null;
+				model.OutstationRatePerDay = null;
+			}
+			else if (model.TripType == TripType.Outstation)
+			{
+				model.BaseKM = null;
+				model.BaseHours = null;
+				model.BasePrice = null;
+				//model.ExtraKMRate = null;
+				//model.ExtraHourRate = null;
+			}
 
 			_context.RateCards.Add(model);
 			_context.SaveChanges();
@@ -51,8 +75,10 @@ namespace SharavaniTours.Areas.Admin.Controllers
 		// =======================
 		// EDIT GET
 		// =======================
-		public IActionResult Edit(int id)
+		public async Task<IActionResult> Edit(int id)
 		{
+			await LoadDropdowns();
+
 			var rate = _context.RateCards.FirstOrDefault(x => x.Id == id);
 
 			if (rate == null)
@@ -65,8 +91,10 @@ namespace SharavaniTours.Areas.Admin.Controllers
 		// EDIT POST
 		// =======================
 		[HttpPost]
-		public IActionResult Edit(RateCard model)
+		public async Task<IActionResult> Edit(RateCard model)
 		{
+			await LoadDropdowns();
+
 			if (!ModelState.IsValid)
 				return View(model);
 
@@ -75,18 +103,41 @@ namespace SharavaniTours.Areas.Admin.Controllers
 			if (existing == null)
 				return NotFound();
 
-			// ✅ Update fields safely
+			// 🔹 BASIC
 			existing.Name = model.Name;
+			existing.VehicleTypeId = model.VehicleTypeId;
+			existing.TripType = model.TripType;
 
-			existing.BaseKM = model.BaseKM;
-			existing.BaseHours = model.BaseHours;
-			existing.BasePrice = model.BasePrice;
+			// 🔥 HANDLE LOCAL / OUTSTATION
+			if (model.TripType == TripType.Local)
+			{
+				existing.BaseKM = model.BaseKM;
+				existing.BaseHours = model.BaseHours;
+				existing.BasePrice = model.BasePrice;
 
-			existing.ExtraKMRate = model.ExtraKMRate;
-			existing.ExtraHourRate = model.ExtraHourRate;
+				existing.ExtraKMRate = model.ExtraKMRate;
+				existing.ExtraHourRate = model.ExtraHourRate;
 
-			existing.OutstationPerDayKM = model.OutstationPerDayKM;
-			existing.OutstationRatePerDay = model.OutstationRatePerDay;
+				// Clear outstation
+				existing.OutstationPerDayKM = null;
+				existing.OutstationRatePerDay = null;
+			}
+			else
+			{
+				existing.OutstationPerDayKM = model.OutstationPerDayKM;
+				existing.OutstationRatePerDay = model.OutstationRatePerDay;
+				existing.ExtraKMRate = model.ExtraKMRate;
+				existing.ExtraHourRate = model.ExtraHourRate;
+
+				// Clear local
+				existing.BaseKM = null;
+				existing.BaseHours = null;
+				existing.BasePrice = null;
+			}
+
+			// 🔹 COMMON
+			existing.NightCharges = model.NightCharges;
+			existing.DriverAllowancePerDay = model.DriverAllowancePerDay;
 
 			_context.SaveChanges();
 
@@ -104,12 +155,23 @@ namespace SharavaniTours.Areas.Admin.Controllers
 			if (rate == null)
 				return NotFound();
 
-			// ✅ Soft delete
 			rate.IsDeleted = true;
 
 			_context.SaveChanges();
 
 			return RedirectToAction("Index");
+		}
+
+		// =======================
+		// COMMON METHOD
+		// =======================
+		private async Task LoadDropdowns()
+		{
+			ViewBag.VehicleTypes = new SelectList(
+					await _context.VehicleTypes.ToListAsync(),
+					"Id",
+					"Name"
+				);
 		}
 	}
 }

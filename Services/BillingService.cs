@@ -15,20 +15,28 @@ namespace SharavaniTours.Services
 			// 🔹 Time Calculation
 			var totalHours = (decimal)(trip.DutySlip.EndTime - trip.DutySlip.StartTime).TotalHours;
 
+			// 🔹 Safe defaults for nullable values
+			var baseKm = rate.BaseKM ?? 0;
+			var baseHours = rate.BaseHours ?? 0;
+			var basePrice = rate.BasePrice ?? 0;
+
+			var extraKmRate = rate.ExtraKMRate ?? 0;
+			var extraHourRate = rate.ExtraHourRate ?? 0;
+
 			// 🔹 Extra Calculations
-			var extraKm = Math.Max(0, totalKm - rate.BaseKM);
-			var extraHours = Math.Max(0, totalHours - rate.BaseHours);
+			var extraKm = Math.Max(0, totalKm - baseKm);
+			var extraHours = Math.Max(0, totalHours - baseHours);
 
 			// 🔹 Base Billing
 			var total =
-				rate.BasePrice +
-				(extraKm * rate.ExtraKMRate) +
-				(extraHours * rate.ExtraHourRate);
+				basePrice +
+				(extraKm * extraKmRate) +
+				(extraHours * extraHourRate);
 
 			// 🔥 ADDITIONAL CHARGES
-			total += trip.DriverAllowance;                       // From Trip (Admin)
-			total += trip.DutySlip.TollCharges;                  // From Driver
-			total += trip.DutySlip.ParkingCharges;               // From Driver
+			total += trip.DriverAllowance;
+			total += trip.DutySlip.TollCharges;
+			total += trip.DutySlip.ParkingCharges;
 
 			return total;
 		}

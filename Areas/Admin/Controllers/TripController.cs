@@ -28,8 +28,9 @@ namespace SharavaniTours.Areas.Admin.Controllers
 		{
 			await LoadDropdowns();
 
+
 			// ✅ Prevent null error
-			ViewBag.ClientUsers = new List<ClientUser>();
+			//ViewBag.ClientUsers = new List<ClientUser>();
 
 			return View();
 		}
@@ -51,7 +52,7 @@ namespace SharavaniTours.Areas.Admin.Controllers
 				return View(trip);
 			}
 
-			trip.Status = "Pending";
+			trip.Status = TripStatus.Pending;
 			trip.BookedDate = DateTime.Now;
 			trip.ItineraryCode = "ITN-" + DateTime.Now.Ticks;
 
@@ -69,7 +70,8 @@ namespace SharavaniTours.Areas.Admin.Controllers
 			var trips = _context.Trips
 				.Include(t => t.Client)
 				.Include(t => t.Driver)
-				.Include(t => t.Vehicle)
+				.Include(t => t.RequestedVehicle)
+				.Include(t => t.SentVehicle)
 				.Include(t => t.RateCard)
 				.Include(t => t.DutySlip)
 				.ToList();
@@ -84,8 +86,10 @@ namespace SharavaniTours.Areas.Admin.Controllers
 		{
 			var trip = _context.Trips
 				.Include(t => t.Client)
+				.Include(t => t.ClientUser)
 				.Include(t => t.Driver)
-				.Include(t => t.Vehicle)
+				.Include(t => t.RequestedVehicle)
+				.Include(t => t.SentVehicle)
 				.Include(t => t.RateCard)
 				.Include(t => t.DutySlip)
 				.FirstOrDefault(t => t.Id == id);
@@ -138,11 +142,15 @@ namespace SharavaniTours.Areas.Admin.Controllers
 			if (trip == null)
 				return NotFound();
 
-			// ✅ Safe updates
+			// ✅ Allowed updates
 			trip.ClientId = model.ClientId;
 			trip.DriverId = model.DriverId;
-			trip.VehicleId = model.VehicleId;
 			trip.RateCardId = model.RateCardId;
+
+			// ✅ Only requested vehicle editable
+			trip.RequestedVehicleId = model.RequestedVehicleId;
+
+			// ❌ DO NOT TOUCH SentVehicleId here
 
 			trip.ClientUserId = model.ClientUserId;
 			trip.BookedBy = model.BookedBy;
@@ -156,7 +164,6 @@ namespace SharavaniTours.Areas.Admin.Controllers
 
 			return RedirectToAction("Index");
 		}
-
 		// =======================
 		// DELETE (SOFT DELETE)
 		// =======================
@@ -175,16 +182,50 @@ namespace SharavaniTours.Areas.Admin.Controllers
 			return RedirectToAction("Index");
 		}
 
+
+		[HttpGet]
+		public IActionResult GetRateCardsByVehicle(int vehicleId)
+		{
+			var vehicle = _context.Vehicles
+				.FirstOrDefault(v => v.Id == vehicleId);
+
+			if (vehicle == null)
+				return Json(new List<object>());
+
+			var rateCards = _context.RateCards
+				.Where(r => r.VehicleTypeId == vehicle.VehicleTypeId && !r.IsDeleted)
+				.Select(r => new
+				{
+					r.Id,
+					r.Name,
+					r.TripType,
+					Price = r.TripType == TripType.Local
+						? r.BasePrice
+						: r.OutstationRatePerDay,
+					DriverAllowance = r.DriverAllowancePerDay // ✅ ADD THIS
+				})
+				.ToList();
+
+			return Json(rateCards);
+		}
+
 		// =======================
 		// 🔁 COMMON DROPDOWN LOADER
 		// =======================
 		private async Task LoadDropdowns()
 		{
 			ViewBag.Clients = _context.Clients.ToList();
-			ViewBag.Vehicles = _context.Vehicles.ToList();
-			ViewBag.RateCards = _context.RateCards.ToList();
 
-			// ✅ Only drivers
+			ViewBag.ClientUsers = _context.ClientUsers.Any()
+				? _context.ClientUsers.ToList()
+				: new List<ClientUser>();
+
+			ViewBag.Vehicles = _context.Vehicles
+				.Include(v => v.VehicleType) // 🔥 MUST
+				.ToList();
+
+			ViewBag.RateCards = new List<RateCard>(); // ❌ not preloaded anymore
+
 			ViewBag.Drivers = await _userManager.GetUsersInRoleAsync("Driver");
 		}
 	}

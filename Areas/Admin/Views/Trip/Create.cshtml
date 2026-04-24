@@ -1,8 +1,5 @@
-﻿@model SharavaniTours.Models.Trip
-
-@{
-    ViewData["Title"] = "Dispatch New Trip";
-}
+﻿
+@model SharavaniTours.Models.Trip
 
 <style>
     .form-glass-container {
@@ -58,102 +55,158 @@
     }
 </style>
 
-<div class="form-glass-container">
-    <div class="d-flex align-items-center gap-3 mb-5">
-        <div class="icon-box" style="width: 45px; height: 45px; background: rgba(59, 130, 246, 0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
-            <i class="bi bi-map-fill text-primary fs-4"></i>
-        </div>
-        <div>
-            <h2 class="fw-800 mb-0" style="color: #fff;">Create New Trip</h2>
-            <p class="text-slate-light mb-0">Assign resources and define trip parameters.</p>
-        </div>
-    </div>
 
-    @if (!ViewData.ModelState.IsValid)
-    {
-        <div asp-validation-summary="All" class="alert alert-danger border-0 bg-danger bg-opacity-10 text-danger mb-4 rounded-3 small"></div>
-    }
+<div class="form-glass-container">
+
+    <h2 class="text-white mb-4">🚗 Create New Trip</h2>
 
     <form asp-area="Admin" asp-controller="Trip" asp-action="Create" method="post">
-        @Html.AntiForgeryToken()
 
         <div class="row g-4">
-            <div class="col-12"><span class="section-label">Resource Assignment</span></div>
+
+            <!-- 🔹 CLIENT -->
+            <div class="col-12"><span class="section-label">Client Details</span></div>
 
             <div class="col-md-6">
-                <label class="form-label">Client</label>
-                <select asp-for="ClientId" id="clientDropdown" class="form-control-glass form-select">
-                    <option value="">-- Select Client --</option>
+                <label>Client</label>
+                <select asp-for="ClientId" class="form-control-glass form-select">
+                    <option value="">Select Client</option>
                     @foreach (var c in ViewBag.Clients)
                     {
                         <option value="@c.Id">@c.Name</option>
                     }
                 </select>
-                <span asp-validation-for="ClientId" class="text-danger small"></span>
             </div>
 
             <div class="col-md-6">
-                <label class="form-label">Client Contact Person</label>
-                <select asp-for="ClientUserId" id="clientUserDropdown" class="form-control-glass form-select">
-                    <option value="">-- Select User --</option>
-                    @foreach (var u in (ViewBag.ClientUsers ?? new List<SharavaniTours.Models.ClientUser>()))
+                <label>Contact Person</label>
+                <select asp-for="ClientUserId" class="form-control-glass form-select">
+                    <option value="">Select User</option>
+                    @foreach (var u in ViewBag.ClientUsers)
                     {
                         <option value="@u.Id">@u.FullName (@u.MobileNo)</option>
                     }
                 </select>
             </div>
 
-            <div class="col-md-6">
-                <label class="form-label">Driver</label>
-                <select asp-for="DriverId" class="form-control-glass form-select">
-                    <option value="">-- Select Driver --</option>
-                    @foreach (var d in ViewBag.Drivers)
-                    {
-                        <option value="@d.Id">@(d.FullName ?? d.Email)</option>
-                    }
-                </select>
-            </div>
+            <!-- 🔹 VEHICLE -->
+            <div class="col-12 mt-4"><span class="section-label">Vehicle Assignment</span></div>
 
             <div class="col-md-6">
-                <label class="form-label">Vehicle</label>
-                <select asp-for="VehicleId" class="form-control-glass form-select">
-                    <option value="">-- Select Vehicle --</option>
+                <label>Vehicle</label>
+                <select asp-for="RequestedVehicleId" id="vehicleDropdown" class="form-control-glass form-select">
+                    <option value="">Select Vehicle</option>
                     @foreach (var v in ViewBag.Vehicles)
                     {
-                        <option value="@v.Id">@v.VehicleNo (@v.Type)</option>
+                        <option value="@v.Id">@v.VehicleNo (@v.VehicleType.Name)</option>
                     }
                 </select>
             </div>
 
-            <div class="col-12 mt-5"><span class="section-label">Billing & Logistics</span></div>
-
-            <div class="col-md-4">
-                <label class="form-label">Rate Card</label>
-                <select asp-for="RateCardId" class="form-control-glass form-select">
-                    <option value="">-- Select Rate --</option>
-                    @foreach (var r in ViewBag.RateCards)
+            <div class="col-md-6">
+                <label>Driver</label>
+                <select asp-for="DriverId" class="form-control-glass form-select">
+                    <option value="">Select Driver</option>
+                    @foreach (var d in ViewBag.Drivers)
                     {
-                        <option value="@r.Id">@r.Name (₹@r.BasePrice)</option>
+                        <option value="@d.Id">@d.FullName</option>
                     }
                 </select>
             </div>
 
-            <div class="col-md-4">
-                <label class="form-label">Booked By</label>
-                <input asp-for="BookedBy" class="form-control-glass w-100" placeholder="Person Name" />
+            <!-- 🔹 PRICING -->
+            <div class="col-12 mt-4"><span class="section-label">Pricing</span></div>
+
+            <div class="col-md-6">
+                <label>Rate Card</label>
+                <select asp-for="RateCardId" id="rateCardDropdown"
+                        class="form-control-glass form-select" disabled>
+                    <option value="">Select Rate</option>
+                </select>
             </div>
 
-            <div class="col-md-4">
-                <label class="form-label">Driver Allowance (₹)</label>
-                <input asp-for="DriverAllowance" class="form-control-glass w-100" type="number" step="0.01" />
+            <div class="col-md-6">
+                <label>Driver Allowance (₹)</label>
+                <input asp-for="DriverAllowance" id="driverAllowance"
+                       class="form-control-glass w-100" type="number" />
             </div>
 
-            <div class="col-12 d-flex align-items-center justify-content-between mt-5 pt-4">
-                <a asp-action="Index" class="text-decoration-none fw-600 text-slate-light" style="color:#94a3b8">Cancel</a>
-                <button type="submit" class="btn-dispatch">
-                    <i class="bi bi-send-check me-2"></i> Create & Dispatch
+            <!-- 🔹 TRIP DETAILS -->
+            <div class="col-12 mt-4"><span class="section-label">Trip Info</span></div>
+
+            <div class="col-md-6">
+                <label>Pickup Location</label>
+                <input asp-for="PickupLocation" class="form-control-glass w-100" />
+            </div>
+
+            <div class="col-md-6">
+                <label>Drop Location</label>
+                <input asp-for="DropLocation" class="form-control-glass w-100" />
+            </div>
+
+            <div class="col-md-6">
+                <label>Booked By</label>
+                <input asp-for="BookedBy" class="form-control-glass w-100" />
+            </div>
+
+            <!-- 🔹 SUBMIT -->
+            <div class="col-12 mt-5">
+                <button class="btn-dispatch w-100">
+                    🚀 Create Trip
                 </button>
             </div>
+
         </div>
     </form>
 </div>
+
+<script>
+    let rateCardData = [];
+
+    // 🔹 Vehicle change
+    document.getElementById("vehicleDropdown").addEventListener("change", function () {
+
+        const vehicleId = this.value;
+        const rateDropdown = document.getElementById("rateCardDropdown");
+
+        rateDropdown.innerHTML = '<option value="">Select Rate</option>';
+
+        if (!vehicleId) {
+            rateDropdown.disabled = true;
+            return;
+        }
+
+        rateDropdown.disabled = false;
+
+        fetch('/Admin/Trip/GetRateCardsByVehicle?vehicleId=' + vehicleId)
+            .then(res => res.json())
+            .then(data => {
+
+                rateCardData = data;
+
+                data.forEach(r => {
+
+                    const price = r.price ?? 0;
+
+                    rateDropdown.insertAdjacentHTML('beforeend',
+                        `<option value="${r.id}">
+                            ${r.name} (₹${price})
+                        </option>`);
+                });
+            });
+    });
+
+
+    // 🔹 RateCard change → set DriverAllowance
+    document.getElementById("rateCardDropdown").addEventListener("change", function () {
+
+        const selectedId = this.value;
+
+        const selected = rateCardData.find(x => x.id == selectedId);
+
+        if (!selected) return;
+
+        document.getElementById("driverAllowance").value =
+            selected.driverAllowance ?? 0;
+    });
+</script>

@@ -19,7 +19,9 @@ namespace SharavaniTours.Data
 		public DbSet<Trip> Trips { get; set; }
 		public DbSet<DutySlip> DutySlips { get; set; }
 		public DbSet<ClientUser> ClientUsers { get; set; }
+		public DbSet<VehicleType> VehicleTypes { get; set; }
 		
+
 
 
 
@@ -37,11 +39,18 @@ namespace SharavaniTours.Data
 				}
 			}
 
-			builder.Entity<Trip>()
-				.HasOne(t => t.Vehicle)
-				.WithMany()
-				.HasForeignKey(t => t.VehicleId)
-				.OnDelete(DeleteBehavior.Restrict); 
+			builder.Entity<Trip>(entity =>
+			{
+				entity.HasOne(t => t.RequestedVehicle)
+					.WithMany()
+					.HasForeignKey(t => t.RequestedVehicleId)
+					.OnDelete(DeleteBehavior.Restrict);
+
+				entity.HasOne(t => t.SentVehicle)
+					.WithMany()
+					.HasForeignKey(t => t.SentVehicleId)
+					.OnDelete(DeleteBehavior.Restrict);
+			});
 
 			builder.Entity<Trip>()
 				.HasOne(t => t.Driver)

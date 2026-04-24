@@ -5,191 +5,226 @@
     ViewData["Title"] = "Invoice Reports";
 }
 
+
 <style>
+    :root {
+        --glass-bg: rgba(30, 41, 59, 0.4);
+        --glass-border: rgba(255, 255, 255, 0.08);
+        --accent-primary: #3b82f6;
+        --accent-success: #10b981;
+        --text-main: #f8fafc;
+        --text-dim: #94a3b8;
+    }
+
+    /* Uniform Form Styling */
     .filter-container {
-        background: rgba(15, 23, 42, 0.4);
+        background: var(--glass-bg);
         backdrop-filter: blur(20px);
         border-radius: 16px;
-        padding: 20px;
-        border: 1px solid rgba(255,255,255,0.08);
-        margin-bottom: 20px;
+        padding: 24px;
+        border: 1px solid var(--glass-border);
+        margin-bottom: 24px;
     }
 
-    .form-label {
-        color: #94a3b8;
-        font-size: 0.75rem;
-        font-weight: 600;
+    .form-group-custom label {
+        color: var(--text-dim);
+        font-size: 0.7rem;
+        font-weight: 700;
         text-transform: uppercase;
-        margin-bottom: 6px;
+        letter-spacing: 0.5px;
+        margin-bottom: 8px;
+        display: block;
     }
 
-    .form-control-glass {
-        background: rgba(15, 23, 42, 0.4);
-        border: 1px solid rgba(255,255,255,0.1);
-        color: #fff;
-        border-radius: 10px;
-        padding: 8px 12px;
+    /* Shared Glass Input Style */
+    .form-control-glass, .form-select-glass {
+        background: rgba(15, 23, 42, 0.6) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        color: var(--text-main) !important;
+        border-radius: 8px;
+        padding: 10px 14px;
+        font-size: 0.9rem;
+        transition: all 0.2s;
+        height: 45px; /* Fixed height for uniformity */
     }
 
         .form-control-glass:focus {
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 3px rgba(59,130,246,0.2);
+            border-color: var(--accent-primary) !important;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+            outline: none;
         }
 
-    .btn-primary-glass {
-        background: #3b82f6;
-        border: none;
-        border-radius: 10px;
-        padding: 8px 20px;
-        font-weight: 600;
+    /* Professional Buttons */
+    .btn-filter {
+        background: var(--accent-primary);
         color: white;
-        box-shadow: 0 4px 15px rgba(59,130,246,0.3);
-    }
-
-        .btn-primary-glass:hover {
-            background: #2563eb;
-        }
-
-    .btn-download {
-        background: rgba(34,197,94,0.15);
-        color: #22c55e;
-        border: 1px solid rgba(34,197,94,0.3);
-        border-radius: 10px;
-        padding: 8px 18px;
+        border: none;
+        border-radius: 8px;
         font-weight: 600;
+        height: 45px;
+        transition: transform 0.1s, background 0.2s;
     }
 
-        .btn-download:hover {
-            background: #22c55e;
-            color: white;
+        .btn-filter:hover {
+            background: #2563eb;
+            transform: translateY(-1px);
         }
 
-    .table-glass {
-        color: #e2e8f0;
-        background: rgba(255,255,255,0.03);
-        border-radius: 12px;
-        overflow: hidden;
+    .btn-download-outline {
+        background: transparent;
+        color: var(--accent-success);
+        border: 1px solid var(--accent-success);
+        border-radius: 8px;
+        padding: 8px 16px;
+        font-weight: 600;
+        font-size: 0.85rem;
+        transition: all 0.2s;
     }
 
-        .table-glass th {
-            background: rgba(15,23,42,0.8);
-            color: #3b82f6;
+        .btn-download-outline:hover {
+            background: var(--accent-success);
+            color: #fff;
+        }
+
+    /* Clean Table Styling - UPDATED */
+    .table-glass-clean {
+        margin-top: 20px;
+        border-collapse: separate;
+        border-spacing: 0 10px; /* Space between rows */
+        background: transparent !important; /* Ensure table is transparent */
+    }
+
+        .table-glass-clean thead th {
+            background: transparent !important;
+            color: var(--accent-primary);
             font-size: 0.75rem;
             text-transform: uppercase;
-            padding: 14px;
+            border: none;
+            padding: 12px 20px;
         }
 
-        .table-glass td {
-            padding: 14px;
-            border-top: 1px solid rgba(255,255,255,0.05);
-            background: rgb(255 255 255 / 55%);
+        /* Target the cells specifically to kill the white background */
+        .table-glass-clean tbody tr td {
+            background: rgba(255, 255, 255, 0.05) !important; /* Very subtle dark glass */
+            border: none !important;
+            color: #f8fafc !important; /* Force off-white text for visibility */
+            padding: 16px 20px;
+            transition: background 0.3s ease;
         }
 
-        .table-glass tr:hover td {
-            background: rgb(255 255 255 / 25%);
+        /* Hover effect */
+        .table-glass-clean tbody tr:hover td {
+            background: rgba(255, 255, 255, 0.12) !important;
+            cursor: default;
         }
 
-    .text-muted-light {
-        color: #94a3b8;
-        font-size: 0.85rem;
+        /* Rounded corners for the "Floating Row" look */
+        .table-glass-clean td:first-child {
+            border-radius: 12px 0 0 12px !important;
+        }
+
+        .table-glass-clean td:last-child {
+            border-radius: 0 12px 12px 0 !important;
+        }
+
+    /* ID column emphasis */
+    .text-id {
+        color: var(--accent-primary);
+        font-weight: 700;
+    }
+
+    .text-success-bright {
+        color: #34d399 !important;
     }
 </style>
 
-<!-- HEADER -->
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <div>
-        <h2 class="fw-bold text-white mb-1">Invoice Reports</h2>
-        <p class="text-muted-light mb-0">Filter and download trip invoices.</p>
-    </div>
+<div class="mb-4">
+    <h2 class="fw-bold text-white mb-1">Invoice Reports</h2>
+    <p class="text-muted-light mb-0">Manage and export your fleet financial data.</p>
 </div>
 
-<!-- FILTER -->
 <div class="filter-container">
-    <form method="get">
-        <div class="row g-3 align-items-end">
+    <form method="get" class="row g-3">
+        <div class="col-md-2 form-group-custom">
+            <label>From Date</label>
+            <input type="date" asp-for="FromDate" class="form-control-glass w-100" />
+        </div>
 
-            <div class="col-md-2">
-                <label class="form-label">From</label>
-                <input type="date" name="FromDate" value="@Model?.FromDate?.ToString("yyyy-MM-dd")" class="form-control form-control-glass" />
-            </div>
+        <div class="col-md-2 form-group-custom">
+            <label>To Date</label>
+            <input type="date" asp-for="ToDate" class="form-control-glass w-100" />
+        </div>
 
-            <div class="col-md-2">
-                <label class="form-label">To</label>
-                <input type="date" name="ToDate" value="@Model?.ToDate?.ToString("yyyy-MM-dd")" class="form-control form-control-glass" />
-            </div>
+        <div class="col-md-2 form-group-custom">
+            <label>Driver</label>
+            <select asp-for="DriverId" asp-items="Model.Drivers" class="form-select-glass w-100">
+                <option value="">All Drivers</option>
+            </select>
+        </div>
 
-            <div class="col-md-2">
-                <label class="form-label">Driver</label>
-                <input type="text" name="DriverId" value="@Model?.DriverId" class="form-control form-control-glass" />
-            </div>
+        <div class="col-md-2 form-group-custom">
+            <label>Vehicle</label>
+            <select asp-for="VehicleId" asp-items="Model.Vehicles" class="form-select-glass w-100">
+                <option value="">All Vehicles</option>
+            </select>
+        </div>
 
-            <div class="col-md-2">
-                <label class="form-label">Vehicle</label>
-                <input type="number" name="VehicleId" value="@Model?.VehicleId" class="form-control form-control-glass" />
-            </div>
+        <div class="col-md-2 form-group-custom">
+            <label>Client User</label>
+            <select asp-for="ClientUserId" asp-items="Model.ClientUsers" class="form-select-glass w-100">
+                <option value="">All Clients</option>
+            </select>
+        </div>
 
-            <div class="col-md-2">
-                <label class="form-label">Client User</label>
-                <input type="number" name="ClientUserId" value="@Model?.ClientUserId" class="form-control form-control-glass" />
-            </div>
-
-            <div class="col-md-2 d-flex gap-2">
-                <button type="submit" class="btn-primary-glass w-100">
-                    <i class="bi bi-funnel me-1"></i> Filter
-                </button>
-            </div>
+        <div class="col-md-2 d-flex align-items-end">
+            <button type="submit" class="btn btn-filter w-100">
+                <i class="bi bi-funnel-fill me-2"></i>Filter
+            </button>
         </div>
     </form>
 
-    <!-- DOWNLOAD -->
-    <form method="get" asp-action="DownloadInvoiceReport" class="mt-3">
-        <input type="hidden" name="FromDate" value="@Model?.FromDate?.ToString("yyyy-MM-dd")" />
-        <input type="hidden" name="ToDate" value="@Model?.ToDate?.ToString("yyyy-MM-dd")" />
-        <input type="hidden" name="DriverId" value="@Model?.DriverId" />
-        <input type="hidden" name="VehicleId" value="@Model?.VehicleId" />
-        <input type="hidden" name="ClientUserId" value="@Model?.ClientUserId" />
+    <hr style="border-color: rgba(255,255,255,0.05); margin: 20px 0;">
 
-        <button type="submit" class="btn-download">
-            <i class="bi bi-download me-1"></i> Download PDF
+    <form method="get" asp-action="DownloadInvoiceReport">
+        <button type="submit" class="btn-download-outline">
+            <i class="bi bi-file-earmark-pdf me-1"></i> Export PDF Report
         </button>
     </form>
 </div>
 
-<!-- TABLE -->
 @if (Model?.Trips != null && Model.Trips.Any())
 {
     <div class="table-responsive">
-        <table class="table table-glass">
-            <thead>
-                <tr>
-                    <th>Invoice</th>
-                    <th>Date</th>
-                    <th>Client</th>
-                    <th>Driver</th>
-                    <th>Vehicle</th>
-                    <th class="text-end">Total</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var trip in Model.Trips)
-                {
+        <div class="table-responsive">
+            <table class="table table-glass-clean">
+                <thead>
                     <tr>
-                        <td class="fw-bold text-white">#@trip.Id</td>
-                        <td>@trip.BookedDate.ToString("dd-MM-yyyy")</td>
-                        <td>@trip.Client?.Name</td>
-                        <td>@trip.Driver?.FullName</td>
-                        <td>@trip.Vehicle?.VehicleNo</td>
-                        <td class="text-end text-success fw-bold">₹@trip.TotalAmount</td>
+                        <th>ID</th>
+                        <th>Date</th>
+                        <th>Client</th>
+                        <th>Driver</th>
+                        <th>Vehicle</th>
+                        <th class="text-end">Total Amount</th>
                     </tr>
-                }
-            </tbody>
-        </table>
-    </div>
-}
-else
-{
-    <div class="text-center mt-5 text-muted-light">
-        <i class="bi bi-inbox fs-2 d-block mb-2"></i>
-        No invoices found for selected filters.
+                </thead>
+                <tbody>
+                    @foreach (var trip in Model.Trips)
+                    {
+                        <tr>
+                            <td class="text-id">#@trip.Id</td>
+                            <td>@trip.BookedDate.ToString("dd MMM yyyy")</td>
+                            <td>@trip.Client?.Name</td>
+                            <td>@trip.Driver?.FullName</td>
+                            <td>
+                                <span class="badge" style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1);">
+                                    @trip.SentVehicle?.VehicleNo
+                                </span>
+                            </td>
+                            <td class="text-end text-success-bright fw-bold">₹@trip.TotalAmount</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
     </div>
 }

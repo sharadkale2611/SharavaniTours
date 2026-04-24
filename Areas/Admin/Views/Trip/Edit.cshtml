@@ -97,7 +97,7 @@
 
             <div class="col-md-4">
                 <label class="form-label">Vehicle</label>
-                <select asp-for="VehicleId" class="form-control-glass form-select">
+                <select asp-for="RequestedVehicleId" class="form-control-glass form-select">
                     @foreach (var v in ViewBag.Vehicles)
                     {
                         <option value="@v.Id">@v.VehicleNo</option>

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using SharavaniTours.Models;
 
 namespace SharavaniTours.Areas.Admin.Controllers
@@ -19,12 +20,22 @@ namespace SharavaniTours.Areas.Admin.Controllers
 		// =======================
 		// LIST
 		// =======================
-		public IActionResult Index()
+		public async Task<IActionResult> Index()
 		{
-			var drivers = _userManager.Users.ToList();
+			var users = await _userManager.Users.ToListAsync();
+
+			var drivers = new List<ApplicationUser>();
+
+			foreach (var user in users)
+			{
+				if (await _userManager.IsInRoleAsync(user, "Driver"))
+				{
+					drivers.Add(user);
+				}
+			}
+
 			return View(drivers);
 		}
-
 		// =======================
 		// DETAILS
 		// =======================
@@ -53,9 +64,9 @@ namespace SharavaniTours.Areas.Admin.Controllers
 		// CREATE POST
 		// =======================
 		[HttpPost]
-		public async Task<IActionResult> Create(string fullName, string email, string password)
+		public async Task<IActionResult> Create(string fullName, string email, string password, string mobileNumber = "")
 		{
-			if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
+			if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password) || string.IsNullOrEmpty(mobileNumber))
 			{
 				ModelState.AddModelError("", "All fields are required");
 				return View();
@@ -65,7 +76,8 @@ namespace SharavaniTours.Areas.Admin.Controllers
 			{
 				FullName = fullName,
 				UserName = email,
-				Email = email
+				Email = email,
+				PhoneNumber = mobileNumber
 			};
 
 			var result = await _userManager.CreateAsync(user, password);
@@ -118,6 +130,8 @@ namespace SharavaniTours.Areas.Admin.Controllers
 			user.FullName = model.FullName;
 			user.Email = model.Email;
 			user.UserName = model.Email;
+			user.PhoneNumber = model.PhoneNumber;
+
 
 			var result = await _userManager.UpdateAsync(user);
 

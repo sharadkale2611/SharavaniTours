@@ -1,4 +1,5 @@
 ﻿@model SharavaniTours.Models.RateCard
+@using SharavaniTours.Models
 
 @{
     ViewData["Title"] = "Define New Pricing";
@@ -43,13 +44,6 @@
             outline: none;
         }
 
-    .input-group-text-glass {
-        background: rgba(30, 41, 59, 0.6);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        color: #94a3b8;
-        border-radius: 10px 0 0 10px;
-    }
-
     .btn-save {
         background: #3b82f6;
         color: white;
@@ -57,14 +51,7 @@
         padding: 12px 35px;
         border-radius: 10px;
         font-weight: 700;
-        transition: all 0.3s;
-        box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
     }
-
-        .btn-save:hover {
-            background: #2563eb;
-            transform: translateY(-2px);
-        }
 </style>
 
 <div class="form-glass-container">
@@ -74,71 +61,154 @@
         </div>
         <div>
             <h2 class="fw-800 mb-0" style="color: #fff;">Create Rate Card</h2>
-            <p class="text-slate-light mb-0" style="color: #94a3b8 !important;">Define billing rules for local and outstation trips.</p>
+            <p class="text-slate-light mb-0">Define billing rules for local and outstation trips.</p>
         </div>
     </div>
 
     <form asp-area="Admin" asp-controller="RateCard" asp-action="Create" method="post">
+
         <div class="row g-4">
+
+            <!-- 🔹 NAME -->
             <div class="col-12">
-                <label asp-for="Name" class="form-label">Plan Name / Description</label>
-                <input asp-for="Name" class="form-control-glass w-100" placeholder="e.g. Corporate Standard - SUV" required />
+                <label asp-for="Name" class="form-label"></label>
+                <input asp-for="Name" class="form-control-glass w-100" required />
             </div>
 
-            <div class="col-12 mt-5"><div class="section-title">Standard Base Package</div></div>
+            <!-- VEHICLE Type-->
+            <div class="col-md-6">
+                <label class="form-label">Vehicle Type</label>
+                <select asp-for="VehicleTypeId" class="form-control-glass w-100" asp-items="ViewBag.VehicleTypes">
+                    <option value="">Select Vehicle type</option>
+                </select>
+            </div>
 
-            <div class="col-md-4">
-                <label asp-for="BaseKM" class="form-label">Base Distance</label>
-                <div class="input-group">
-                    <input asp-for="BaseKM" class="form-control-glass w-100" placeholder="80" />
+            <!-- 🔹 TRIP TYPE -->
+            <div class="col-md-6">
+                <label class="form-label">Trip Type</label>
+                <select asp-for="TripType" id="tripType" class="form-control-glass w-100">
+                    <option value="">Select Trip Type</option>
+                    <option value="Local">Local</option>
+                    <option value="Outstation">Outstation</option>
+                </select>
+            </div>
+
+
+            <!-- 🔹 LOCAL SECTION -->
+            <div id="localSection" >
+                <div class="row">
+                <div class="col-12 mt-5"><div class="section-title">Standard Base Package</div></div>
+
+                <div class="col-md-4">
+                    <label asp-for="BaseKM" class="form-label"></label>
+                    <input asp-for="BaseKM" class="form-control-glass w-100" />
                 </div>
-                <small class="text-muted">Kilometers</small>
+
+                <div class="col-md-4">
+                    <label asp-for="BaseHours" class="form-label"></label>
+                    <input asp-for="BaseHours" class="form-control-glass w-100" />
+                </div>
+
+                <div class="col-md-4">
+                    <label asp-for="BasePrice" class="form-label"></label>
+                    <input asp-for="BasePrice" class="form-control-glass w-100" />
+                </div>
+
+                @* <div class="col-12 mt-5"><div class="section-title">Extra Charges</div></div> *@
+
+                @* <div class="col-md-6"> *@
+                @*     <label asp-for="ExtraKMRate" class="form-label"></label> *@
+                @*     <input asp-for="ExtraKMRate" class="form-control-glass w-100" /> *@
+                @* </div> *@
+
+                @* <div class="col-md-6"> *@
+                @*     <label asp-for="ExtraHourRate" class="form-label"></label> *@
+                @*     <input asp-for="ExtraHourRate" class="form-control-glass w-100" /> *@
+                @* </div> *@
+                </div>
             </div>
 
-            <div class="col-md-4">
-                <label asp-for="BaseHours" class="form-label">Base Time</label>
-                <input asp-for="BaseHours" class="form-control-glass w-100" placeholder="8" />
-                <small class="text-muted">Hours</small>
-            </div>
-
-            <div class="col-md-4">
-                <label asp-for="BasePrice" class="form-label">Package Price</label>
-                <input asp-for="BasePrice" class="form-control-glass w-100" placeholder="0.00" />
-                <small class="text-muted">INR (₹)</small>
-            </div>
-
-            <div class="col-12 mt-5"><div class="section-title">Extra Usage Charges</div></div>
+            <!-- 🔹 COMMON -->
+            <div class="col-12 mt-5"><div class="section-title">Additional Charges</div></div>
 
             <div class="col-md-6">
-                <label asp-for="ExtraKMRate" class="form-label">Extra KM Rate</label>
-                <input asp-for="ExtraKMRate" class="form-control-glass w-100" placeholder="₹ per extra KM" />
+                <label asp-for="ExtraKMRate" class="form-label"></label>
+                <input asp-for="ExtraKMRate" class="form-control-glass w-100" />
             </div>
 
             <div class="col-md-6">
-                <label asp-for="ExtraHourRate" class="form-label">Extra Hour Rate</label>
-                <input asp-for="ExtraHourRate" class="form-control-glass w-100" placeholder="₹ per extra Hour" />
+                <label asp-for="ExtraHourRate" class="form-label"></label>
+                <input asp-for="ExtraHourRate" class="form-control-glass w-100" />
             </div>
 
-            <div class="col-12 mt-5"><div class="section-title">Outstation Defaults</div></div>
+
+            <!-- 🔹 OUTSTATION SECTION -->
+            <div id="outstationSection">
+                <div class="row">
+                    <div class="col-12 mt-5"><div class="section-title">Outstation Pricing</div></div>
+
+                    <div class="col-md-6">
+                        <label asp-for="OutstationPerDayKM" class="form-label"></label>
+                        <input asp-for="OutstationPerDayKM" class="form-control-glass w-100" />
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="OutstationRatePerDay" class="form-label"></label>
+                        <input asp-for="OutstationRatePerDay" class="form-control-glass w-100" />
+                    </div>
+                </div>
+            </div>
+
+            <!-- 🔹 COMMON -->
+            <div class="col-12 mt-5"><div class="section-title">Additional Charges</div></div>
 
             <div class="col-md-6">
-                <label asp-for="OutstationPerDayKM" class="form-label">Min. Daily KM</label>
-                <input asp-for="OutstationPerDayKM" class="form-control-glass w-100" placeholder="300" />
+                <label asp-for="NightCharges" class="form-label"></label>
+                <input asp-for="NightCharges" class="form-control-glass w-100" />
             </div>
 
             <div class="col-md-6">
-                <label asp-for="OutstationRatePerDay" class="form-for">Outstation Rate</label>
-                <input asp-for="OutstationRatePerDay" class="form-control-glass w-100" placeholder="₹ per KM" />
+                <label asp-for="DriverAllowancePerDay" class="form-label"></label>
+                <input asp-for="DriverAllowancePerDay" class="form-control-glass w-100" />
             </div>
 
-            <div class="col-12 d-flex align-items-center justify-content-between mt-5 pt-4">
-                <a asp-action="Index" class="text-decoration-none fw-600" style="color: #94a3b8;">
-                    <i class="bi bi-arrow-left me-2"></i>Back to Rates
+            <!-- 🔹 SUBMIT -->
+            <div class="col-12 d-flex justify-content-between mt-5 pt-4">
+                <a asp-action="Index" class="text-decoration-none" style="color:#94a3b8;">
+                    Back
                 </a>
-                <button type="submit" class="btn-save">
-                    <i class="bi bi-shield-check me-2"></i>Save Strategy
-                </button>
+                <button type="submit" class="btn-save">Save</button>
             </div>
+
         </div>
     </form>
 </div>
+
+<script>
+    function toggleSections() {
+        var type = document.getElementById("tripType").value;
+
+        var local = document.getElementById("localSection");
+        var outstation = document.getElementById("outstationSection");
+
+        local.style.display = (type === "Local") ? "block" : "none";
+        outstation.style.display = (type === "Outstation") ? "block" : "none";
+
+        // 🔥 IMPORTANT: disable inputs
+        toggleInputs(local, type !== "Local");
+        toggleInputs(outstation, type !== "Outstation");
+    }
+
+    function toggleInputs(container, disable) {
+        var inputs = container.querySelectorAll("input");
+
+        inputs.forEach(i => {
+            i.disabled = disable;
+        });
+    }
+
+    document.getElementById("tripType").addEventListener("change", toggleSections);
+
+    // initial load
+    toggleSections();
+</script>

@@ -26,7 +26,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Update="Areas\Driver\Views\Driver\Invoice - Copy.cshtml">
+    <Content Update="Areas\Driver\Views\Driver\Details.cshtml">
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>

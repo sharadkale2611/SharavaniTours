@@ -1,4 +1,5 @@
-﻿@model IEnumerable<SharavaniTours.Models.Trip>
+﻿@using SharavaniTours.Models;
+@model IEnumerable<SharavaniTours.Models.Trip>
 
 @{
     ViewData["Title"] = "Trip Log";
@@ -7,113 +8,113 @@
 <style>
     /* Consistent Table Styling */
     .table-glass {
-        color: #e2e8f0;
-        vertical-align: middle;
-        background: rgba(238, 238, 238, 0.07);
+    color: #e2e8f0;
+    vertical-align: middle;
+    background: rgba(238, 238, 238, 0.07);
     }
 
-        .table-glass thead th {
-            background: linear-gradient(180deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.9) 100%);
-            color: #3b82f6;
-            font-weight: 700;
-            text-transform: uppercase;
-            font-size: 0.7rem;
-            letter-spacing: 1px;
-            border-bottom: 2px solid rgba(255, 255, 255, 0.05);
-            padding: 12px 10px;
-        }
+    .table-glass thead th {
+    background: linear-gradient(180deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.9) 100%);
+    color: #3b82f6;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.7rem;
+    letter-spacing: 1px;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.05);
+    padding: 12px 10px;
+    }
 
-        .table-glass td {
-            padding: 12px 10px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            background: transparent;
-            font-size: 0.9rem;
-        }
+    .table-glass td {
+    padding: 12px 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    background: transparent;
+    font-size: 0.9rem;
+    }
 
     /* Status Badges */
     .badge-status {
-        padding: 5px 10px;
-        border-radius: 6px;
-        font-size: 0.75rem;
-        font-weight: 700;
-        text-transform: uppercase;
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
     }
 
     .status-pending {
-        background: rgba(245, 158, 11, 0.15);
-        color: #f59e0b;
-        border: 1px solid rgba(245, 158, 11, 0.3);
+    background: rgba(245, 158, 11, 0.15);
+    color: #f59e0b;
+    border: 1px solid rgba(245, 158, 11, 0.3);
     }
 
     .status-running {
-        background: rgba(59, 130, 246, 0.15);
-        color: #3b82f6;
-        border: 1px solid rgba(59, 130, 246, 0.3);
+    background: rgba(59, 130, 246, 0.15);
+    color: #3b82f6;
+    border: 1px solid rgba(59, 130, 246, 0.3);
     }
 
     .status-completed {
-        background: rgba(16, 185, 129, 0.15);
-        color: #10b981;
-        border: 1px solid rgba(16, 185, 129, 0.3);
+    background: rgba(16, 185, 129, 0.15);
+    color: #10b981;
+    border: 1px solid rgba(16, 185, 129, 0.3);
     }
 
     /* Action Buttons */
     .action-btn {
-        width: 30px;
-        height: 30px;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 6px;
-        transition: all 0.2s;
-        text-decoration: none !important;
-        border: none;
-        font-size: 0.85rem;
+    width: 30px;
+    height: 30px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    transition: all 0.2s;
+    text-decoration: none !important;
+    border: none;
+    font-size: 0.85rem;
     }
 
     .btn-view {
-        color: #94a3b8;
-        background: rgba(148, 163, 184, 0.1);
+    color: #94a3b8;
+    background: rgba(148, 163, 184, 0.1);
     }
 
-        .btn-view:hover {
-            background: #94a3b8;
-            color: #fff;
-        }
+    .btn-view:hover {
+    background: #94a3b8;
+    color: #fff;
+    }
 
     .btn-edit {
-        color: #3b82f6;
-        background: rgba(59, 130, 246, 0.1);
+    color: #3b82f6;
+    background: rgba(59, 130, 246, 0.1);
     }
 
-        .btn-edit:hover {
-            background: #3b82f6;
-            color: #fff;
-        }
+    .btn-edit:hover {
+    background: #3b82f6;
+    color: #fff;
+    }
 
     .btn-invoice {
-        color: #f59e0b;
-        background: rgba(245, 158, 11, 0.1);
+    color: #f59e0b;
+    background: rgba(245, 158, 11, 0.1);
     }
 
-        .btn-invoice:hover {
-            background: #f59e0b;
-            color: #fff;
-        }
+    .btn-invoice:hover {
+    background: #f59e0b;
+    color: #fff;
+    }
 
     .btn-delete {
-        color: #ef4444;
-        background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+    background: rgba(239, 68, 68, 0.1);
     }
 
-        .btn-delete:hover {
-            background: #ef4444;
-            color: #fff;
-        }
+    .btn-delete:hover {
+    background: #ef4444;
+    color: #fff;
+    }
 
     .text-slate-light {
-        color: #94a3b8 !important;
-        font-size: 0.8rem;
+    color: #94a3b8 !important;
+    font-size: 0.8rem;
     }
 </style>
 
@@ -123,7 +124,7 @@
         <p class="text-slate-light mb-0">Track bookings, vehicle movement, and billing status.</p>
     </div>
     <a asp-area="Admin" asp-controller="Trip" asp-action="Create" class="btn btn-primary px-4 py-2"
-       style="background: #3b82f6; border: none; border-radius: 10px; font-weight: 600;">
+    style="background: #3b82f6; border: none; border-radius: 10px; font-weight: 600;">
         <i class="bi bi-plus-circle me-2"></i> Create Trip
     </a>
 </div>
@@ -158,19 +159,23 @@
                     </td>
                     <td>
                         <span class="badge" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);">
-                            @t.Vehicle?.VehicleNo
+                            @t.RequestedVehicle?.VehicleNo
                         </span>
+                        <span class="badge" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);">
+                            @t.SentVehicle?.VehicleNo
+                        </span>
+
                     </td>
                     <td>
-                        @if (t.Status == "Pending")
+                        @if (t.Status == TripStatus.Pending)
                         {
                             <span class="badge-status status-pending">Pending</span>
                         }
-                        else if (t.Status == "Running")
+                        else if (t.Status == TripStatus.Started)
                         {
                             <span class="badge-status status-running">Running</span>
                         }
-                        else if (t.Status == "Completed")
+                        else if (t.Status == TripStatus.Completed)
                         {
                             <span class="badge-status status-completed">Completed</span>
                         }
@@ -194,7 +199,7 @@
                         }
                     </td>
                     <td class="fw-bold">
-                        @if (t.Status == "Completed")
+                        @if (t.Status == TripStatus.Completed)
                         {
                             <span style="color: #10b981;">₹@t.TotalAmount</span>
                         }
@@ -212,27 +217,29 @@
                                 <i class="bi bi-eye"></i>
                             </a>
 
-                            @if (t.Status != "Completed")
-                            {
-                                <a asp-action="Edit" asp-route-id="@t.Id" class="action-btn btn-edit" title="Edit Trip">
-                                    <i class="bi bi-pencil"></i>
-                                </a>
-                            }
+                            @* @if (t.Status != TripStatus.Completed) *@
+                            @* { *@
+                            @*     <a asp-action="Edit" asp-route-id="@t.Id" class="action-btn btn-edit" title="Edit Trip"> *@
+                            @*         <i class="bi bi-pencil"></i> *@
+                            @*     </a> *@
+                            @* } *@
 
-                            @if (t.Status == "Completed")
+                            @if (t.Status == TripStatus.Completed)
                             {
                                 <a asp-area="Driver" asp-controller="Driver" asp-action="Invoice" asp-route-id="@t.Id"
-                                   class="action-btn btn-invoice" title="Generate Invoice">
+                                class="action-btn btn-invoice" title="Generate Invoice">
                                     <i class="bi bi-file-earmark-pdf"></i>
                                 </a>
                             }
-
-                            <form asp-action="Delete" asp-route-id="@t.Id" method="post" style="display:inline;">
-                                <button type="submit" class="action-btn btn-delete" title="Delete"
-                                        onclick="return confirm('Delete trip @t.ItineraryCode?')">
-                                    <i class="bi bi-trash"></i>
-                                </button>
-                            </form>
+                            @if (t.Status != TripStatus.Completed)
+                            {
+                                <form asp-action="Delete" asp-route-id="@t.Id" method="post" style="display:inline;">
+                                    <button type="submit" class="action-btn btn-delete" title="Delete"
+                                    onclick="return confirm('Delete trip @t.ItineraryCode?')">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            }
                         </div>
                     </td>
                 </tr>

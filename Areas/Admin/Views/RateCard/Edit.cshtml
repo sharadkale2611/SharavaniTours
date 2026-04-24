@@ -1,11 +1,11 @@
 ﻿@model SharavaniTours.Models.RateCard
+@using SharavaniTours.Models
 
 @{
     ViewData["Title"] = "Edit Pricing Strategy";
 }
 
 <style>
-    /* Consistent styles with Create page */
     .form-glass-container {
         max-width: 800px;
         margin: 0 auto;
@@ -16,10 +16,10 @@
         font-weight: 700;
         text-transform: uppercase;
         letter-spacing: 1.5px;
-        color: #f59e0b;
+        color: #3b82f6;
         margin-bottom: 20px;
         padding-bottom: 5px;
-        border-bottom: 1px solid rgba(245, 158, 11, 0.2);
+        border-bottom: 1px solid rgba(59, 130, 246, 0.2);
     }
 
     .form-label {
@@ -35,23 +35,23 @@
         color: #fff !important;
         padding: 10px 15px;
         border-radius: 10px;
+        transition: all 0.3s ease;
     }
 
-    .btn-update {
-        background: #f59e0b;
+        .form-control-glass:focus {
+            border-color: #3b82f6 !important;
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
+            outline: none;
+        }
+
+    .btn-save {
+        background: #3b82f6;
         color: white;
         border: none;
         padding: 12px 35px;
         border-radius: 10px;
         font-weight: 700;
-        transition: all 0.3s;
-        box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
     }
-
-        .btn-update:hover {
-            background: #d97706;
-            transform: translateY(-2px);
-        }
 </style>
 
 <div class="form-glass-container">
@@ -60,8 +60,10 @@
             <i class="bi bi-pencil-square text-warning fs-4"></i>
         </div>
         <div>
-            <h2 class="fw-800 mb-0" style="color: #fff;">Edit Rate Card</h2>
-            <p class="text-slate-light mb-0" style="color: #94a3b8 !important;">Adjusting pricing for <span class="text-white">@Model.Name</span></p>
+            <h2 class="fw-800 mb-0 text-white">Edit Rate Card</h2>
+            <p class="text-slate-light mb-0">
+                Adjusting pricing for <span class="text-white">@Model.Name</span>
+            </p>
         </div>
     </div>
 
@@ -69,58 +71,135 @@
         <input type="hidden" asp-for="Id" />
 
         <div class="row g-4">
+
+            <!-- NAME -->
             <div class="col-12">
-                <label asp-for="Name" class="form-label">Plan Name</label>
+                <label asp-for="Name" class="form-label"></label>
                 <input asp-for="Name" class="form-control-glass w-100" />
             </div>
 
-            <div class="col-12 mt-5"><div class="section-title">Standard Base Package</div></div>
-
-            <div class="col-md-4">
-                <label asp-for="BaseKM" class="form-label">Base KM</label>
-                <input asp-for="BaseKM" class="form-control-glass w-100" />
+            <!-- VEHICLE TYPE -->
+            <div class="col-md-6">
+                <label class="form-label">Vehicle Type</label>
+                <select asp-for="VehicleTypeId"
+                        asp-items="ViewBag.VehicleTypes"
+                        class="form-control-glass w-100">
+                </select>
             </div>
 
-            <div class="col-md-4">
-                <label asp-for="BaseHours" class="form-label">Base Hours</label>
-                <input asp-for="BaseHours" class="form-control-glass w-100" />
+            <!-- TRIP TYPE -->
+            <div class="col-md-6">
+                <label class="form-label">Trip Type</label>
+                <select asp-for="TripType" id="tripType" class="form-control-glass w-100">
+                    <option value="Local">Local</option>
+                    <option value="Outstation">Outstation</option>
+                </select>
             </div>
 
-            <div class="col-md-4">
-                <label asp-for="BasePrice" class="form-label">Base Price (₹)</label>
-                <input asp-for="BasePrice" class="form-control-glass w-100" />
+            <!-- 🔹 LOCAL SECTION -->
+            <div id="localSection" class="row">
+                <div class="col-12 mt-5">
+                    <div class="section-title">Standard Base Package</div>
+                </div>
+
+                <div class="col-md-4">
+                    <label asp-for="BaseKM" class="form-label"></label>
+                    <input asp-for="BaseKM" class="form-control-glass w-100" />
+                </div>
+
+                <div class="col-md-4">
+                    <label asp-for="BaseHours" class="form-label"></label>
+                    <input asp-for="BaseHours" class="form-control-glass w-100" />
+                </div>
+
+                <div class="col-md-4">
+                    <label asp-for="BasePrice" class="form-label"></label>
+                    <input asp-for="BasePrice" class="form-control-glass w-100" />
+                </div>
             </div>
 
-            <div class="col-12 mt-5"><div class="section-title">Extra Usage Charges</div></div>
+            <!-- 🔹 OUTSTATION -->
+            <div id="outstationSection" class="row">
+                <div class="col-12 mt-5">
+                    <div class="section-title">Outstation Pricing</div>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="OutstationPerDayKM" class="form-label"></label>
+                    <input asp-for="OutstationPerDayKM" class="form-control-glass w-100" />
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="OutstationRatePerDay" class="form-label"></label>
+                    <input asp-for="OutstationRatePerDay" class="form-control-glass w-100" />
+                </div>
+            </div>
+
+            <!-- 🔹 COMMON (IMPORTANT CHANGE) -->
+            <div class="col-12 mt-5">
+                <div class="section-title">Additional Charges</div>
+            </div>
 
             <div class="col-md-6">
-                <label asp-for="ExtraKMRate" class="form-label">Extra KM Rate (₹)</label>
+                <label asp-for="ExtraKMRate" class="form-label"></label>
                 <input asp-for="ExtraKMRate" class="form-control-glass w-100" />
             </div>
 
             <div class="col-md-6">
-                <label asp-for="ExtraHourRate" class="form-label">Extra Hour Rate (₹)</label>
+                <label asp-for="ExtraHourRate" class="form-label"></label>
                 <input asp-for="ExtraHourRate" class="form-control-glass w-100" />
             </div>
 
-            <div class="col-12 mt-5"><div class="section-title">Outstation Defaults</div></div>
-
             <div class="col-md-6">
-                <label asp-for="OutstationPerDayKM" class="form-label">Min. Daily KM</label>
-                <input asp-for="OutstationPerDayKM" class="form-control-glass w-100" />
+                <label asp-for="NightCharges" class="form-label"></label>
+                <input asp-for="NightCharges" class="form-control-glass w-100" />
             </div>
 
             <div class="col-md-6">
-                <label asp-for="OutstationRatePerDay" class="form-label">Outstation Rate (₹)</label>
-                <input asp-for="OutstationRatePerDay" class="form-control-glass w-100" />
+                <label asp-for="DriverAllowancePerDay" class="form-label"></label>
+                <input asp-for="DriverAllowancePerDay" class="form-control-glass w-100" />
             </div>
 
-            <div class="col-12 d-flex align-items-center justify-content-between mt-5 pt-4">
-                <a asp-action="Index" class="text-decoration-none fw-600" style="color: #94a3b8;">Cancel Changes</a>
+            <!-- ACTION -->
+            <div class="col-12 d-flex justify-content-between mt-5 pt-4">
+                <a asp-action="Index" class="text-decoration-none fw-600" style="color:#94a3b8;">
+                    Cancel Changes
+                </a>
+
                 <button type="submit" class="btn-update">
                     <i class="bi bi-arrow-repeat me-2"></i>Update Rate Card
                 </button>
             </div>
+
         </div>
     </form>
 </div>
+
+<script>
+    function toggleSections() {
+        var type = document.getElementById("tripType").value;
+
+        var local = document.getElementById("localSection");
+        var outstation = document.getElementById("outstationSection");
+
+        local.style.display = (type === "Local") ? "flex" : "none";
+        outstation.style.display = (type === "Outstation") ? "flex" : "none";
+
+        toggleInputs(local, type !== "Local");
+        toggleInputs(outstation, type !== "Outstation");
+    }
+
+    function toggleInputs(container, disable) {
+        var inputs = container.querySelectorAll("input");
+
+        inputs.forEach(i => {
+            i.disabled = disable;
+        });
+    }
+
+    document.getElementById("tripType").addEventListener("change", toggleSections);
+
+    window.onload = function () {
+        toggleSections();
+    };
+</script>

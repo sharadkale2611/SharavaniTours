@@ -7,10 +7,29 @@
     var ds = Model.DutySlip;
 
     var totalKm = ds.EndKM - ds.StartKM;
-    var extraKm = Math.Max(0, totalKm - Model.RateCard.BaseKM);
 
-    var totalHours = (decimal)(ds.EndTime - ds.StartTime).TotalHours;
-    var extraHours = Math.Max(0, totalHours - Model.RateCard.BaseHours);
+    var baseKm = Model.RateCard.BaseKM ?? 0;
+    var baseHours = Model.RateCard.BaseHours ?? 0;
+    var basePrice = Model.RateCard.BasePrice ?? 0;
+
+    var extraKmRate = Model.RateCard.ExtraKMRate ?? 0;
+    var extraHourRate = Model.RateCard.ExtraHourRate ?? 0;
+
+    var extraKm = Math.Max(0, totalKm - baseKm);
+
+    var totalHours = (int)Math.Round((ds.EndTime - ds.StartTime).TotalHours);
+    var extraHours = Math.Max(0, totalHours - baseHours);
+}
+
+@{
+
+    // var ds = Model.DutySlip;
+
+    // var totalKm = ds.EndKM - ds.StartKM;
+    // var extraKm = Math.Max(0, totalKm - Model.RateCard.BaseKM);
+
+    // var totalHours = (decimal)(ds.EndTime - ds.StartTime).TotalHours;
+    // var extraHours = Math.Max(0, totalHours - Model.RateCard.BaseHours);
 }
 
 <style>
@@ -201,7 +220,7 @@
         </div>
 
         <div>
-            <h2>SHARAVANI TOURS & TRAVELS</h2>
+            <h2>SHRAVANI TOURS & TRAVELS</h2>
             <p>
                 Sr.No. 204/9, Siddhivinayak Colony, Road No. 4, Papde Wasti,<br />
                 Fursungi 412308, Contact No. 07387473977
@@ -249,6 +268,12 @@
                     <td>@Model.BookedBy</td>
                 </tr>
             </table>
+
+            <div class="mt-4 pt-3 text-right text-bold text-small" >
+                <br />
+                <span>@(Model.DropLocation)</span> :
+                @(Model.TripType == SharavaniTours.Models.TripType.Local ? "LOCAL" : "OUTSTATION")
+            </div>
         </div>
     </div>
 
@@ -268,8 +293,8 @@
 
         <div class="col">
             <div class="title">Cab Details</div>
-            <p>Type: @Model.Vehicle?.Type</p>
-            <p>No: @Model.Vehicle?.VehicleNo</p>
+            <p>Type: @Model.SentVehicle?.VehicleType.Name</p>
+            <p>No: @Model.SentVehicle?.VehicleNo</p>
             <p>Driver: @Model.Driver?.FullName</p>
         </div>
     </div>
@@ -370,7 +395,7 @@
 
         <div class="bottom-right">
             <div class="sign-box">Customers Sign</div>
-            <div class="sign-box">For Sharavani Tours & Travels</div>
+            <div class="sign-box">For Shravani Tours & Travels</div>
         </div>
     </div>
 
