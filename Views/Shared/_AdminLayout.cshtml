@@ -208,9 +208,17 @@
         </div>
 
         <div class="mt-2">
-            <a asp-area="" asp-controller="Home" asp-action="Index">
+            <a asp-area="Admin" asp-controller="Dashboard" asp-action="Index">
                 <i class="bi bi-speedometer2"></i> Dashboard
             </a>
+            <a asp-area="Admin" asp-controller="Trip" asp-action="Index">
+                <i class="bi bi-map"></i> All Trips
+            </a>
+
+            <a asp-area="Admin" asp-controller="BillPayment" asp-action="Index">
+                <i class="bi bi-map"></i> Bill Payments
+            </a>
+
 
             @if (User.IsInRole("Admin"))
             {
@@ -229,11 +237,8 @@
                 <a asp-area="Admin" asp-controller="Vehicle" asp-action="Index">
                     <i class="bi bi-car-front"></i> Vehicles
                 </a>
-                <a asp-area="Admin" asp-controller="Trip" asp-action="Index">
-                    <i class="bi bi-map"></i> All Trips
-                </a>
                 <a asp-area="Admin" asp-controller="RateCard" asp-action="Index">
-                    <i class="bi bi-cash-stack"></i> Pricing Cards
+                    <i class="bi bi-cash-stack"></i> Rate Card
                 </a>
                 <a asp-area="Driver" asp-controller="Driver" asp-action="InvoiceReport">
                     <i class="bi bi-receipt"></i> Invoice Reports

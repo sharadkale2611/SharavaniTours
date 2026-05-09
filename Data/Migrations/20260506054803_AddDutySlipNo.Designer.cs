@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SharavaniTours.Data;
 
@@ -11,9 +12,11 @@ using SharavaniTours.Data;
 namespace SharavaniTours.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260506054803_AddDutySlipNo")]
+    partial class AddDutySlipNo
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -538,31 +541,13 @@ namespace SharavaniTours.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("DutySlipNo")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("DutyType")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<DateTime?>("EndDate")
                         .HasColumnType("datetime2");
-
-                    b.Property<int?>("EndKM")
-                        .HasColumnType("int");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
                     b.Property<string>("ItineraryCode")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("NextDayInstruction")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<decimal>("ParkingCharges")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("PaymentMode")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PickupLocation")
@@ -571,12 +556,6 @@ namespace SharavaniTours.Data.Migrations
 
                     b.Property<int>("RateCardId")
                         .HasColumnType("int");
-
-                    b.Property<string>("ReportingAddress")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("ReportingTime")
-                        .HasColumnType("datetime2");
 
                     b.Property<int?>("RequestedVehicleId")
                         .HasColumnType("int");
@@ -587,14 +566,8 @@ namespace SharavaniTours.Data.Migrations
                     b.Property<DateTime?>("StartDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("StartKM")
-                        .HasColumnType("int");
-
                     b.Property<int>("Status")
                         .HasColumnType("int");
-
-                    b.Property<decimal>("TollCharges")
-                        .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal>("TotalAmount")
                         .HasColumnType("decimal(18,2)");

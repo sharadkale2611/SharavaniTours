@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SharavaniTours.Data;
 
@@ -11,9 +12,11 @@ using SharavaniTours.Data;
 namespace SharavaniTours.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260506100413_trip_totalAmount_nullable")]
+    partial class trip_totalAmount_nullable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -536,9 +539,6 @@ namespace SharavaniTours.Data.Migrations
 
                     b.Property<string>("DropLocation")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("DutySlipNo")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("DutyType")

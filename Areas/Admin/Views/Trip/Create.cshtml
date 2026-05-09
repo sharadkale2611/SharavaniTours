@@ -1,42 +1,49 @@
-﻿
-@model SharavaniTours.Models.Trip
+﻿@model SharavaniTours.Models.Trip
 
 <style>
     .form-glass-container {
-        max-width: 850px;
         margin: 0 auto;
     }
 
-    .section-label {
-        font-size: 0.7rem;
-        font-weight: 800;
-        text-transform: uppercase;
-        letter-spacing: 1.5px;
-        color: #3b82f6;
-        margin-bottom: 20px;
-        display: block;
-        border-left: 3px solid #3b82f6;
-        padding-left: 10px;
+    h2 {
+        font-size: 1.4rem;
+        margin-bottom: 18px !important;
     }
 
-    .form-label {
+    .section-label {
+        font-size: 0.68rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1.2px;
+        color: #3b82f6;
+        margin-bottom: 10px;
+        display: block;
+        border-left: 3px solid #3b82f6;
+        padding-left: 8px;
+        line-height: 1;
+    }
+
+    label {
         color: #94a3b8;
         font-weight: 600;
-        font-size: 0.85rem;
-        margin-bottom: 8px;
+        font-size: 0.78rem;
+        margin-bottom: 4px;
+        display: inline-block;
     }
 
     .form-control-glass {
         background: rgba(15, 23, 42, 0.4) !important;
         border: 1px solid rgba(255, 255, 255, 0.1) !important;
         color: #fff !important;
-        border-radius: 10px;
-        padding: 10px 15px;
+        border-radius: 8px;
+        padding: 7px 12px;
+        min-height: 38px;
+        font-size: 0.9rem;
     }
 
         .form-control-glass:focus {
             border-color: #3b82f6 !important;
-            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
         }
 
     select.form-control-glass option {
@@ -44,116 +51,324 @@
         color: #fff;
     }
 
+    .form-select {
+        padding-top: 7px;
+        padding-bottom: 7px;
+    }
+
     .btn-dispatch {
         background: linear-gradient(135deg, #3b82f6, #2563eb);
         color: white;
         border: none;
-        padding: 12px 40px;
-        border-radius: 10px;
+        padding: 10px 24px;
+        border-radius: 8px;
         font-weight: 700;
-        box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+        font-size: 0.92rem;
+        box-shadow: 0 4px 15px rgba(59, 130, 246, 0.25);
+        min-height: 42px;
+    }
+
+    .compact-row {
+        row-gap: 12px;
+    }
+
+    .section-space {
+        margin-top: 10px !important;
+    }
+
+    @@media (min-width: 992px) {
+
+        .col-lg-3-custom {
+            width: 20%;
+        }
     }
 </style>
 
-
 <div class="form-glass-container">
 
-    <h2 class="text-white mb-4">🚗 Create New Trip</h2>
+    <h2 class="text-white">🚗 Create New Trip</h2>
 
-    <form asp-area="Admin" asp-controller="Trip" asp-action="Create" method="post">
+    <form asp-area="Admin"
+          asp-controller="Trip"
+          asp-action="Create"
+          method="post">
 
-        <div class="row g-4">
+        <!-- VALIDATION SUMMARY -->
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div asp-validation-summary="All"
+                 class="alert alert-danger py-2 px-3 mb-3 small rounded-3">
+            </div>
+        }
+        <div class="row compact-row">
 
-            <!-- 🔹 CLIENT -->
-            <div class="col-12"><span class="section-label">Client Details</span></div>
+            <!-- CLIENT -->
+            <div class="col-12">
+                <span class="section-label">Client Details</span>
+            </div>
+
+            <div class="col-md-3">
+                <label>Booked Date</label>
+                <input asp-for="BookedDate"
+                       class="form-control-glass w-100"
+                       type="date"
+                       value="@DateTime.Now.ToString("yyyy-MM-dd")" />
+            </div>
+
+            <div class="col-md-3">
+                <label>Itinerary Code</label>
+                <input asp-for="ItineraryCode"
+                       class="form-control-glass w-100"
+                       type="text"
+                       value="-" />
+            </div>
+
+            <div class="col-md-3">
+                <label>Trip Start</label>
+                <input asp-for="StartDate"
+                       class="form-control-glass w-100"
+                       type="datetime-local"
+                       value="@(Model?.StartDate?.ToString("yyyy-MM-ddTHH:mm"))" />
+            </div>
+
+            <div class="col-md-3">
+                <label>Trip End</label>
+                <input asp-for="EndDate"
+                       class="form-control-glass w-100"
+                       type="datetime-local"
+                       value="@(Model?.EndDate?.ToString("yyyy-MM-ddTHH:mm"))" />
+            </div>
 
             <div class="col-md-6">
                 <label>Client</label>
-                <select asp-for="ClientId" class="form-control-glass form-select">
+                <select asp-for="ClientId"
+                        class="form-control-glass form-select">
+
                     <option value="">Select Client</option>
+
                     @foreach (var c in ViewBag.Clients)
                     {
                         <option value="@c.Id">@c.Name</option>
                     }
+
                 </select>
             </div>
 
             <div class="col-md-6">
                 <label>Contact Person</label>
-                <select asp-for="ClientUserId" class="form-control-glass form-select">
+                <select asp-for="ClientUserId"
+                        class="form-control-glass form-select">
+
                     <option value="">Select User</option>
+
                     @foreach (var u in ViewBag.ClientUsers)
                     {
-                        <option value="@u.Id">@u.FullName (@u.MobileNo)</option>
+                        <option value="@u.Id">
+                            @u.FullName (@u.MobileNo)
+                        </option>
                     }
+
                 </select>
             </div>
 
-            <!-- 🔹 VEHICLE -->
-            <div class="col-12 mt-4"><span class="section-label">Vehicle Assignment</span></div>
+            <!-- VEHICLE -->
+            <div class="col-12 section-space">
+                <span class="section-label">Vehicle Assignment</span>
+            </div>
 
-            <div class="col-md-6">
+            <div class="col-md-4">
                 <label>Vehicle</label>
-                <select asp-for="RequestedVehicleId" id="vehicleDropdown" class="form-control-glass form-select">
+                <select asp-for="RequestedVehicleId"
+                        id="vehicleDropdown"
+                        class="form-control-glass form-select">
+
                     <option value="">Select Vehicle</option>
+
                     @foreach (var v in ViewBag.Vehicles)
                     {
-                        <option value="@v.Id">@v.VehicleNo (@v.VehicleType.Name)</option>
+                        <option value="@v.Id">
+                            @v.VehicleNo (@v.VehicleType.Name)
+                        </option>
                     }
+
                 </select>
             </div>
 
-            <div class="col-md-6">
+            <div class="col-md-4">
                 <label>Driver</label>
-                <select asp-for="DriverId" class="form-control-glass form-select">
+                <select asp-for="DriverId"
+                        class="form-control-glass form-select">
+
                     <option value="">Select Driver</option>
+
                     @foreach (var d in ViewBag.Drivers)
                     {
                         <option value="@d.Id">@d.FullName</option>
                     }
+
                 </select>
             </div>
 
-            <!-- 🔹 PRICING -->
-            <div class="col-12 mt-4"><span class="section-label">Pricing</span></div>
-
-            <div class="col-md-6">
+            <div class="col-md-4">
                 <label>Rate Card</label>
-                <select asp-for="RateCardId" id="rateCardDropdown"
-                        class="form-control-glass form-select" disabled>
+                <select asp-for="RateCardId"
+                        id="rateCardDropdown"
+                        class="form-control-glass form-select">
                     <option value="">Select Rate</option>
+
+                    @if (ViewBag.RateCards != null)
+                    {
+                        foreach (var r in ViewBag.RateCards)
+                        {
+                            <option value="@r.Id"
+                                    selected="@(Model?.RateCardId == r.Id)">
+                                @r.Name
+                            </option>
+                        }
+                    }
+                </select>
+            </div>
+
+            <!-- PRICING -->
+            <div class="col-12 section-space">
+                <span class="section-label">Pricing</span>
+            </div>
+
+            <div class="col-md-4">
+                <label>Driver Allowance (₹)</label>
+                <input asp-for="DriverAllowance"
+                       id="driverAllowance"
+                       class="form-control-glass w-100"
+                       type="number" step="0.01" />
+            </div>
+
+            <!-- TRIP INFO -->
+            <div class="col-12 section-space">
+                <span class="section-label">Trip Info</span>
+            </div>
+
+            <div class="col-md-4">
+                <label>Pickup Location</label>
+                <input asp-for="PickupLocation"
+                       class="form-control-glass w-100" />
+            </div>
+
+            <div class="col-md-4">
+                <label>Drop Location</label>
+                <input asp-for="DropLocation"
+                       class="form-control-glass w-100" />
+            </div>
+
+            <div class="col-md-4">
+                <label>Booked By</label>
+                <input asp-for="BookedBy"
+                       class="form-control-glass w-100" value="Mr. Devkar Sir" />
+            </div>
+
+            <!-- SUBMIT -->
+            <!-- DUTY SLIP -->
+            <div class="col-12 section-space">
+                <span class="section-label">Duty Slip Details</span>
+            </div>
+
+            <div class="col-md-3">
+                <label>Duty Slip No</label>
+
+                <input asp-for="DutySlipNo"
+                       class="form-control-glass w-100"
+                       placeholder="Auto Generated if empty" />
+            </div>
+
+            <div class="col-md-3">
+                <label>Start KM</label>
+                <input asp-for="StartKM"
+                       class="form-control-glass w-100"
+                       type="number" />
+            </div>
+
+            <div class="col-md-3">
+                <label>End KM</label>
+                <input asp-for="EndKM"
+                       class="form-control-glass w-100"
+                       type="number" />
+            </div>
+
+            <div class="col-md-3">
+                <label>Toll Charges (₹)</label>
+                <input asp-for="TollCharges"
+                       class="form-control-glass w-100"
+                       type="number"
+                       step="0.01" />
+            </div>
+
+            <div class="col-md-3">
+                <label>Parking Charges (₹)</label>
+                <input asp-for="ParkingCharges"
+                       class="form-control-glass w-100"
+                       type="number"
+                       step="0.01" />
+            </div>
+
+            <div class="col-md-4">
+                <label>Reporting Time</label>
+                <input asp-for="ReportingTime"
+                       class="form-control-glass w-100"
+                       type="datetime-local"
+                       value="@(Model?.ReportingTime?.ToString("yyyy-MM-ddTHH:mm"))"  />
+            </div>
+
+            <div class="col-md-4">
+                <label>Reporting Address</label>
+                <input asp-for="ReportingAddress"
+                       class="form-control-glass w-100" />
+            </div>
+
+            <div class="col-md-4">
+                <label>Trip Type</label>
+                <select asp-for="TripType"
+                        class="form-control-glass form-select">
+
+                    <option value="1">Local</option>
+                    <option value="2">Outstation</option>
+                    @* <option value="Airport">Airport</option> *@
+
                 </select>
             </div>
 
             <div class="col-md-6">
-                <label>Driver Allowance (₹)</label>
-                <input asp-for="DriverAllowance" id="driverAllowance"
-                       class="form-control-glass w-100" type="number" />
-            </div>
+                <label>Payment Mode</label>
+                <select asp-for="PaymentMode"
+                        class="form-control-glass form-select">
 
-            <!-- 🔹 TRIP DETAILS -->
-            <div class="col-12 mt-4"><span class="section-label">Trip Info</span></div>
+                    <option value="Cash">Cash</option>
+                    <option value="Online">Online</option>
+                    <option value="Card">Card</option>
 
-            <div class="col-md-6">
-                <label>Pickup Location</label>
-                <input asp-for="PickupLocation" class="form-control-glass w-100" />
-            </div>
-
-            <div class="col-md-6">
-                <label>Drop Location</label>
-                <input asp-for="DropLocation" class="form-control-glass w-100" />
+                </select>
             </div>
 
             <div class="col-md-6">
-                <label>Booked By</label>
-                <input asp-for="BookedBy" class="form-control-glass w-100" />
+                <label>Next Day Instruction</label>
+                <input asp-for="NextDayInstruction"
+                       class="form-control-glass w-100" />
             </div>
 
-            <!-- 🔹 SUBMIT -->
-            <div class="col-12 mt-5">
-                <button class="btn-dispatch w-100">
-                    🚀 Create Trip
-                </button>
+            <!-- ACTION BUTTONS -->
+            <div class="col-12 mt-3">
+                <div class="d-flex justify-content-between align-items-center">
+
+                    <a asp-area="Admin"
+                           asp-controller="Trip"
+                           asp-action="Index"
+                           class="btn btn-outline-light px-3 py-2 rounded-3 fw-semibold">
+                        ← All Trips
+                    </a>
+
+                    <button type="submit" class="btn-dispatch px-4">
+                        🚀 Create Trip
+                    </button>
+
+                </div>
             </div>
 
         </div>
@@ -163,13 +378,16 @@
 <script>
     let rateCardData = [];
 
-    // 🔹 Vehicle change
-    document.getElementById("vehicleDropdown").addEventListener("change", function () {
+    // Vehicle change
+    document.getElementById("vehicleDropdown")
+        .addEventListener("change", function () {
 
         const vehicleId = this.value;
-        const rateDropdown = document.getElementById("rateCardDropdown");
+        const rateDropdown =
+            document.getElementById("rateCardDropdown");
 
-        rateDropdown.innerHTML = '<option value="">Select Rate</option>';
+        rateDropdown.innerHTML =
+            '<option value="">Select Rate</option>';
 
         if (!vehicleId) {
             rateDropdown.disabled = true;
@@ -188,21 +406,25 @@
 
                     const price = r.price ?? 0;
 
-                    rateDropdown.insertAdjacentHTML('beforeend',
+                    rateDropdown.insertAdjacentHTML(
+                        'beforeend',
+
                         `<option value="${r.id}">
                             ${r.name} (₹${price})
-                        </option>`);
+                        </option>`
+                    );
                 });
             });
     });
 
-
-    // 🔹 RateCard change → set DriverAllowance
-    document.getElementById("rateCardDropdown").addEventListener("change", function () {
+    // RateCard change
+    document.getElementById("rateCardDropdown")
+        .addEventListener("change", function () {
 
         const selectedId = this.value;
 
-        const selected = rateCardData.find(x => x.id == selectedId);
+        const selected =
+            rateCardData.find(x => x.id == selectedId);
 
         if (!selected) return;
 

@@ -2,19 +2,12 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 #nullable disable
 
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.Extensions.Logging;
 using SharavaniTours.Models;
+using System.ComponentModel.DataAnnotations;
 
 namespace SharavaniTours.Areas.Identity.Pages.Account
 {
@@ -22,17 +15,17 @@ namespace SharavaniTours.Areas.Identity.Pages.Account
     {
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly ILogger<LoginModel> _logger;
-		private readonly UserManager<ApplicationUser> _userManager;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-		public LoginModel(
+        public LoginModel(
             SignInManager<ApplicationUser> signInManager,
-				UserManager<ApplicationUser> userManager,
+                UserManager<ApplicationUser> userManager,
                 ILogger<LoginModel> logger
             )
         {
             _signInManager = signInManager;
-			_userManager = userManager;
-			_logger = logger;
+            _userManager = userManager;
+            _logger = logger;
         }
 
         /// <summary>
@@ -119,26 +112,26 @@ namespace SharavaniTours.Areas.Identity.Pages.Account
                 // This doesn't count login failures towards account lockout
                 // To enable password failures to trigger account lockout, set lockoutOnFailure: true
                 var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
-				if (result.Succeeded)
-				{
-					_logger.LogInformation("User logged in.");
+                if (result.Succeeded)
+                {
+                    _logger.LogInformation("User logged in.");
 
-					//  Get user from DB
-					var user = await _userManager.FindByEmailAsync(Input.Email);
+                    //  Get user from DB
+                    var user = await _userManager.FindByEmailAsync(Input.Email);
 
-					// Get roles
-					var roles = await _userManager.GetRolesAsync(user);
+                    // Get roles
+                    var roles = await _userManager.GetRolesAsync(user);
 
-					if (roles.Contains("Admin"))
-						return Redirect("/Admin/Client");
+                    if (roles.Contains("Admin"))
+                        return Redirect("/Admin/Dashboard");
 
-					if (roles.Contains("Driver"))
-						return Redirect("/Driver/Driver/MyTrips");
+                    if (roles.Contains("Driver"))
+                        return Redirect("/Driver/Driver/MyTrips");
 
-					return Redirect("/");
-				}
+                    return Redirect("/");
+                }
 
-				if (result.RequiresTwoFactor)
+                if (result.RequiresTwoFactor)
                 {
                     return RedirectToPage("./LoginWith2fa", new { ReturnUrl = returnUrl, RememberMe = Input.RememberMe });
                 }

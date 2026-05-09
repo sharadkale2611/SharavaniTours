@@ -217,12 +217,9 @@
                                 <i class="bi bi-eye"></i>
                             </a>
 
-                            @* @if (t.Status != TripStatus.Completed) *@
-                            @* { *@
-                            @*     <a asp-action="Edit" asp-route-id="@t.Id" class="action-btn btn-edit" title="Edit Trip"> *@
-                            @*         <i class="bi bi-pencil"></i> *@
-                            @*     </a> *@
-                            @* } *@
+                            <a asp-action="Edit" asp-route-id="@t.Id" class="action-btn btn-edit" title="Edit Trip"> 
+                                <i class="bi bi-pencil"></i> 
+                            </a> 
 
                             @if (t.Status == TripStatus.Completed)
                             {

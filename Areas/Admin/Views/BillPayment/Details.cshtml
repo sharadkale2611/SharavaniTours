@@ -1,0 +1,389 @@
+﻿@model SharavaniTours.Models.BillPayment
+
+@using SharavaniTours.Models
+
+@{
+    ViewData["Title"] = "Bill Payment Details";
+}
+
+<style>
+
+    .glass-card {
+        background: rgba(15, 23, 42, 0.55);
+        border: 1px solid rgba(255,255,255,0.06);
+        border-radius: 18px;
+        padding: 28px;
+        color: #e2e8f0;
+        backdrop-filter: blur(14px);
+    }
+
+    .section-title {
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        color: #3b82f6;
+        margin-bottom: 18px;
+        border-left: 3px solid #3b82f6;
+        padding-left: 10px;
+    }
+
+    .label-text {
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        color: #94a3b8;
+        margin-bottom: 3px;
+        letter-spacing: 0.8px;
+    }
+
+    .value-text {
+        color: #fff;
+        font-size: 0.95rem;
+        font-weight: 600;
+    }
+
+    .badge-status {
+        padding: 6px 12px;
+        border-radius: 8px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+    }
+
+    .status-pending {
+        background: rgba(245, 158, 11, 0.15);
+        color: #f59e0b;
+        border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+
+    .status-partial {
+        background: rgba(59, 130, 246, 0.15);
+        color: #3b82f6;
+        border: 1px solid rgba(59, 130, 246, 0.3);
+    }
+
+    .status-paid {
+        background: rgba(16, 185, 129, 0.15);
+        color: #10b981;
+        border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .status-cancelled {
+        background: rgba(239, 68, 68, 0.15);
+        color: #ef4444;
+        border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+
+</style>
+
+<div class="d-flex justify-content-between
+    align-items-center mb-4">
+
+    <div>
+
+        <h2 class="fw-bold text-white mb-1">
+            💳 Bill Payment Details
+        </h2>
+
+        <p style="color:#94a3b8;">
+            View complete bill & payment information
+        </p>
+
+    </div>
+
+    <div class="d-flex gap-2">
+
+        <a asp-action="Edit"
+               asp-route-id="@Model.Id"
+               class="btn btn-primary">
+
+            ✏️ Edit
+
+        </a>
+
+        <a asp-action="Index"
+               class="btn btn-outline-light">
+
+            ← Back
+
+        </a>
+
+    </div>
+
+</div>
+
+<div class="glass-card">
+
+    <!-- BILL INFO -->
+
+    <div class="section-title">
+        Bill Information
+    </div>
+
+    <div class="row mb-4">
+
+        <div class="col-md-3 mb-3">
+
+            <div class="label-text">
+                Bill No
+            </div>
+
+            <div class="value-text">
+                @Model.BillNo
+            </div>
+
+        </div>
+
+        <div class="col-md-3 mb-3">
+
+            <div class="label-text">
+                Bill Date
+            </div>
+
+            <div class="value-text">
+                @Model.BillDate.ToString("dd MMM yyyy")
+            </div>
+
+        </div>
+
+        <div class="col-md-3 mb-3">
+
+            <div class="label-text">
+                Duty Slip No
+            </div>
+
+            <div class="value-text">
+                @Model.DutySlipNo
+            </div>
+
+        </div>
+
+        <div class="col-md-3 mb-3">
+
+            <div class="label-text">
+                Payment Status
+            </div>
+
+            <div>
+
+                @if (Model.PaymentStatus
+               == BillPaymentStatus.Pending)
+                {
+                    <span class="badge-status
+                        status-pending">
+
+                        Pending
+
+                    </span>
+                }
+                else if (Model.PaymentStatus
+                == BillPaymentStatus.Partial)
+                {
+                    <span class="badge-status
+                        status-partial">
+
+                        Partial
+
+                    </span>
+                }
+                else if (Model.PaymentStatus
+                == BillPaymentStatus.Paid)
+                {
+                    <span class="badge-status
+                        status-paid">
+
+                        Paid
+
+                    </span>
+                }
+                else
+                {
+                    <span class="badge-status
+                        status-cancelled">
+
+                        Cancelled
+
+                    </span>
+                }
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- VEHICLE -->
+
+    <div class="section-title">
+        Vehicle Details
+    </div>
+
+    <div class="row mb-4">
+
+        <div class="col-md-4 mb-3">
+
+            <div class="label-text">
+                Vehicle Number
+            </div>
+
+            <div class="value-text">
+                @Model.VehicleNo
+            </div>
+
+        </div>
+
+        <div class="col-md-4 mb-3">
+
+            <div class="label-text">
+                Vehicle Type
+            </div>
+
+            <div class="value-text">
+                @Model.VehicleType
+            </div>
+
+        </div>
+
+        <div class="col-md-4 mb-3">
+
+            <div class="label-text">
+                Location
+            </div>
+
+            <div class="value-text">
+                @Model.Location
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- AMOUNTS -->
+
+    <div class="section-title">
+        Amount Details
+    </div>
+
+    <div class="row mb-4">
+
+        <div class="col-md-3 mb-3">
+
+            <div class="label-text">
+                Amount
+            </div>
+
+            <div class="value-text text-info">
+                ₹@Model.Amount
+            </div>
+
+        </div>
+
+        <div class="col-md-3 mb-3">
+
+            <div class="label-text">
+                Toll/Parking
+            </div>
+
+            <div class="value-text">
+                ₹@Model.TollParkingAmount
+            </div>
+
+        </div>
+
+        <div class="col-md-3 mb-3">
+
+            <div class="label-text">
+                TDS
+            </div>
+
+            <div class="value-text">
+                ₹@Model.TDS
+            </div>
+
+        </div>
+
+        <div class="col-md-3 mb-3">
+
+            <div class="label-text">
+                Final Amount
+            </div>
+
+            <div class="value-text text-success">
+                ₹@Model.FinalAmount
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- PAYMENT -->
+
+    <div class="section-title">
+        Payment Information
+    </div>
+
+    <div class="row mb-4">
+
+        <div class="col-md-4 mb-3">
+
+            <div class="label-text">
+                Payment Date
+            </div>
+
+            <div class="value-text">
+
+                @(Model.PaymentDate?.ToString(
+                    "dd MMM yyyy"
+                ) ?? "-")
+
+            </div>
+
+        </div>
+
+        <div class="col-md-4 mb-3">
+
+            <div class="label-text">
+                Created At
+            </div>
+
+            <div class="value-text">
+                @Model.CreatedAt.ToString(
+                    "dd MMM yyyy hh:mm tt"
+                )
+            </div>
+
+        </div>
+
+        <div class="col-md-4 mb-3">
+
+            <div class="label-text">
+                Updated At
+            </div>
+
+            <div class="value-text">
+
+                @(Model.UpdatedAt?.ToString(
+                    "dd MMM yyyy hh:mm tt"
+                ) ?? "-")
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- REMARKS -->
+
+    <div class="section-title">
+        Remarks
+    </div>
+
+    <div class="value-text">
+
+        @(string.IsNullOrWhiteSpace(Model.Remarks)
+            ? "-"
+            : Model.Remarks)
+
+    </div>
+
+</div>

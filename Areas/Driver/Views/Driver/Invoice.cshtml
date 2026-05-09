@@ -1,36 +1,85 @@
 ﻿@model SharavaniTours.Models.Trip
 @using SharavaniTours.Helpers
+@using SharavaniTours.Models
 
 @{
     Layout = null;
 
     var ds = Model.DutySlip;
 
+    // =====================================================
+    // 🚗 KM CALCULATION
+    // =====================================================
+
     var totalKm = ds.EndKM - ds.StartKM;
 
     var baseKm = Model.RateCard.BaseKM ?? 0;
-    var baseHours = Model.RateCard.BaseHours ?? 0;
-    var basePrice = Model.RateCard.BasePrice ?? 0;
 
     var extraKmRate = Model.RateCard.ExtraKMRate ?? 0;
-    var extraHourRate = Model.RateCard.ExtraHourRate ?? 0;
 
     var extraKm = Math.Max(0, totalKm - baseKm);
 
-    var totalHours = (int)Math.Round((ds.EndTime - ds.StartTime).TotalHours);
-    var extraHours = Math.Max(0, totalHours - baseHours);
+    // =====================================================
+    // ⏱️ TIME CALCULATION
+    // =====================================================
+
+    var tripDuration = ds.EndTime - ds.StartTime;
+
+    // 🔹 Total Hours
+    var totalHours =
+        (int)Math.Round(tripDuration.TotalHours);
+
+    // 🔹 Total Days (Outstation)
+    var totalDays =
+        (decimal)Math.Floor(tripDuration.TotalDays);
+
+    // 🔹 Base Hours
+    var baseHours =
+        Model.RateCard.BaseHours ?? 0;
+
+    // 🔹 Extra Hours
+    var extraHours = 0;
+
+    // =====================================================
+    // 🚕 LOCAL TRIP LOGIC
+    // =====================================================
+
+    if (Model.TripType ==
+        SharavaniTours.Models.TripType.Local)
+    {
+        extraHours = Math.Max(
+            0,
+            totalHours - baseHours
+        );
+    }
+
+    // =====================================================
+    // 🌍 OUTSTATION LOGIC
+    // =====================================================
+
+    else
+    {
+        // Remaining hours after complete days
+        extraHours = tripDuration.Hours;
+
+        // Optional rounding
+        if (tripDuration.Minutes >= 30)
+        {
+            extraHours++;
+        }
+    }
+
+    // =====================================================
+    // 💰 RATES
+    // =====================================================
+
+    var basePrice =
+        Model.RateCard.BasePrice ?? 0;
+
+    var extraHourRate =
+        Model.RateCard.ExtraHourRate ?? 0;
 }
 
-@{
-
-    // var ds = Model.DutySlip;
-
-    // var totalKm = ds.EndKM - ds.StartKM;
-    // var extraKm = Math.Max(0, totalKm - Model.RateCard.BaseKM);
-
-    // var totalHours = (decimal)(ds.EndTime - ds.StartTime).TotalHours;
-    // var extraHours = Math.Max(0, totalHours - Model.RateCard.BaseHours);
-}
 
 <style>
     body {
@@ -53,7 +102,7 @@
         padding: 5px;
     }
 
-        .header img{
+        .header img {
             height: 90px;
             width: auto;
         }
@@ -68,7 +117,7 @@
         .header div:nth-child(2) {
             flex: 1;
             text-align: center;
-            padding-top:20px;
+            padding-top: 20px;
         }
 
         .header h2 {
@@ -198,6 +247,14 @@
         margin-top: 10px;
     }
 
+    .label_invoice {
+        font-size:1.4rem;
+    }
+
+    .label_gst {
+        font-size: 1.4rem;
+    }
+
     /* PRINT */
     @@page {
         size: A4;
@@ -212,8 +269,7 @@
 </style>
 
 <div class="invoice-box">
-
-    <!-- HEADER -->
+        <!-- HEADER -->
     <div class="header">
         <div>
             <img src="~/logo.png" />
@@ -228,8 +284,8 @@
         </div>
 
         <div>
-            <p><strong>Invoice</strong></p>
-            <p>GSTIN: 27AJJPR6872R1ZZ</p>
+            <p><strong class="label_invoice">Invoice</strong></p>
+            <p class="label_gst">GSTIN: 27AJJPR6872R1ZZ</p>
         </div>
     </div>
 
@@ -261,7 +317,7 @@
                 </tr>
                 <tr>
                     <td>Duty Slip No</td>
-                    <td>@Model.DutySlip?.Id</td>
+                    <td>@Model.DutySlip?.DutySlipNo</td>
                 </tr>
                 <tr>
                     <td>Booked By</td>
@@ -329,6 +385,7 @@
 
     <!-- CHARGES -->
     <table class="charges-table">
+
         <tr>
             <th>Particulars</th>
             <th>Qty</th>
@@ -336,57 +393,164 @@
             <th>Total</th>
         </tr>
 
-        <tr>
-            <td>FIRST @Model.RateCard.BaseKM KM / @Model.RateCard.BaseHours HRS</td>
-            <td>1</td>
-            <td>@Model.RateCard.BasePrice</td>
-            <td>@Model.RateCard.BasePrice</td>
-        </tr>
+        <!-- LOCAL / OUTSTATION -->
+        @if (Model.TripType == SharavaniTours.Models.TripType.Local)
+        {
+            <tr>
+
+                <td>
+                    FIRST @Model.RateCard.BaseKM KM /
+                    @Model.RateCard.BaseHours HRS
+                </td>
+
+                <td>1</td>
+
+                <td>
+                    @(Model.RateCard.BasePrice ?? 0)
+                </td>
+
+                <td>
+                    @(Model.RateCard.BasePrice ?? 0)
+                </td>
+
+            </tr>
+        }
+        else
+        {
+            <tr>
+
+                <td>
+                    Outstation Charges
+                    (@Model.RateCard.BaseKM KM Per Day)
+                </td>
+
+                <td>@totalDays</td>
+
+                <td>
+                    @(Model.RateCard.OutstationRatePerDay ?? 0)
+                </td>
+
+                <td>
+                    @(
+                        totalDays *
+                        (Model.RateCard.OutstationRatePerDay ?? 0)
+                    )
+                </td>
+
+            </tr>
+        }
+
+        <!-- EXTRA KM -->
 
         <tr>
+
             <td>Extra Kms</td>
+
             <td>@extraKm</td>
-            <td>@Model.RateCard.ExtraKMRate</td>
-            <td>@(extraKm * Model.RateCard.ExtraKMRate)</td>
+
+            <td>
+                @(Model.RateCard.ExtraKMRate ?? 0)
+            </td>
+
+            <td>
+                @(
+                    extraKm *
+                    (Model.RateCard.ExtraKMRate ?? 0)
+                )
+            </td>
+
         </tr>
 
+        <!-- EXTRA HOURS -->
+
         <tr>
+
             <td>Extra Hrs</td>
+
             <td>@extraHours</td>
-            <td>@Model.RateCard.ExtraHourRate</td>
-            <td>@(extraHours * Model.RateCard.ExtraHourRate)</td>
+
+            <td>
+                @(Model.RateCard.ExtraHourRate ?? 0)
+            </td>
+
+            <td>
+                @(
+                    extraHours *
+                    (Model.RateCard.ExtraHourRate ?? 0)
+                )
+            </td>
+
         </tr>
 
+        <!-- DRIVER -->
+
         <tr>
+
             <td>Driver Allowance</td>
-            <td></td>
-            <td></td>
-            <td>@Model.DriverAllowance</td>
-        </tr>
 
-        <tr>
+            <!-- Qty -->
+            <td>1</td>
+
+            <!-- Price -->
+            <td>
+                @(Model.DriverAllowance > 0
+                    ? Model.DriverAllowance
+                    : 0)
+            </td>
+
+            <!-- Total -->
+            <td>
+                @(1 * (
+                    Model.DriverAllowance > 0
+                        ? Model.DriverAllowance
+                        : 0
+                ))
+            </td>
+
+        </tr>
             <td>Toll + Parking</td>
+
             <td></td>
+
             <td></td>
-            <td>@(ds.TollCharges + ds.ParkingCharges)</td>
+
+            <td>
+                @(ds.TollCharges + ds.ParkingCharges)
+            </td>
+
         </tr>
 
+        <!-- TOTAL -->
+
         <tr>
-            <td colspan="3" class="text-right"><strong>Total Amount</strong></td>
-            <td><strong>@Model.TotalAmount</strong></td>
+
+            <td colspan="3"
+                class="text-right">
+
+                <strong>Total Amount</strong>
+
+            </td>
+
+            <td>
+                <strong>
+                    @(Model.TotalAmount)
+                </strong>
+            </td>
+
         </tr>
+
     </table>
 
     <!-- BOTTOM -->
     <div class="bottom-section">
         <div class="bottom-left">
             <p><strong>RUPEES IN WORD</strong></p>
-            <p style="margin-bottom:100px;">@NumberHelper.NumberToWords((int)Model.TotalAmount) Rupees Only</p>
+            <p style="margin-bottom:100px;">@NumberHelper.NumberToWords((int)(Model.TotalAmount)) Rupees Only</p>
 
             <p class="note">
                 Kms & Hrs will be calculated from office to office.<br />
-                (Vehicle are insurred against accident of damage crashed.)<br/>
-                insurance of passanger is not insured in thie quited rates.<br/>
+                (Vehicle are insurred against accident of damage crashed.)<br />
+                insurance of passanger is not insured in thie quited rates.<br />
 
                 Cancellation charges will be ₹1000/- compulsory.<br />
                 Toll and parking paid by party.
@@ -398,5 +562,6 @@
             <div class="sign-box">For Shravani Tours & Travels</div>
         </div>
     </div>
+
 
 </div>

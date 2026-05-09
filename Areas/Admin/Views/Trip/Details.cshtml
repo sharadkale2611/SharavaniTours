@@ -1,6 +1,5 @@
 ﻿@using SharavaniTours.Models;
 @model SharavaniTours.Models.Trip
-
 @{
     ViewData["Title"] = "Trip Overview";
     var statusClass = Model.Status switch
@@ -100,76 +99,76 @@
         </div>
     </div>
 
-    <div class="row g-4">
-        <div class="col-md-4">
-            <div class="glass-card">
-                <div class="section-icon"><i class="bi bi-info-circle-fill"></i></div>
-                <h5 class="text-white fw-700 mb-3">Basic Info</h5>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="glass-card">
+                    <div class="section-icon"><i class="bi bi-info-circle-fill"></i></div>
+                    <h5 class="text-white fw-700 mb-3">Basic Info</h5>
 
-                <div class="mb-3">
-                    <span class="info-label">Itinerary Code</span>
-                    <span class="info-value text-primary">@Model.ItineraryCode</span>
-                </div>
-                <div class="mb-3">
-                    <span class="info-label">Current Status</span>
-                    <span class="status-badge @statusClass text-white">@Model.Status</span>
-                </div>
-                <div class="mb-0">
-                    <span class="info-label">Booking Date</span>
-                    <span class="info-value">@Model.BookedDate.ToString("dd MMM yyyy")</span>
-                    <small class="text-slate-light d-block">By: @Model.BookedBy</small>
+                    <div class="mb-3">
+                        <span class="info-label">Itinerary Code</span>
+                        <span class="info-value text-primary">@Model.ItineraryCode</span>
+                    </div>
+                    <div class="mb-3">
+                        <span class="info-label">Current Status</span>
+                        <span class="status-badge @statusClass text-white">@Model.Status</span>
+                    </div>
+                    <div class="mb-0">
+                        <span class="info-label">Booking Date</span>
+                        <span class="info-value">@Model.BookedDate.ToString("dd MMM yyyy")</span>
+                        <small class="text-slate-light d-block">By: @Model.BookedBy</small>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <div class="col-md-4">
-            <div class="glass-card">
-                <div class="section-icon"><i class="bi bi-building"></i></div>
-                <h5 class="text-white fw-700 mb-3">Client Information</h5>
+            <div class="col-md-4">
+                <div class="glass-card">
+                    <div class="section-icon"><i class="bi bi-building"></i></div>
+                    <h5 class="text-white fw-700 mb-3">Client Information</h5>
 
-                <div class="mb-3">
-                    <span class="info-label">Corporate Client</span>
-                    <span class="info-value">@Model.Client?.Name</span>
-                </div>
-                <div>
-                    <span class="info-label">Point of Contact</span>
-                    @if (Model.ClientUser != null)
-                    {
-                        <span class="info-value d-block">@Model.ClientUser.FullName</span>
-                        <a href="tel:@Model.ClientUser.MobileNo" class="text-primary text-decoration-none small">
-                            <i class="bi bi-telephone me-1"></i> @Model.ClientUser.MobileNo
-                        </a>
-                    }
-                    else
-                    {
-                        <span class="text-danger small italic">No contact assigned</span>
-                    }
+                    <div class="mb-3">
+                        <span class="info-label">Corporate Client</span>
+                        <span class="info-value">@Model.Client?.Name</span>
+                    </div>
+                    <div>
+                        <span class="info-label">Point of Contact</span>
+                        @if (Model.ClientUser != null)
+                        {
+                            <span class="info-value d-block">@Model.ClientUser.FullName</span>
+                            <a href="tel:@Model.ClientUser.MobileNo" class="text-primary text-decoration-none small">
+                                <i class="bi bi-telephone me-1"></i> @Model.ClientUser.MobileNo
+                            </a>
+                        }
+                        else
+                        {
+                            <span class="text-danger small italic">No contact assigned</span>
+                        }
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <div class="col-md-4">
-            <div class="glass-card">
-                <div class="section-icon"><i class="bi bi-car-front-fill"></i></div>
-                <h5 class="text-white fw-700 mb-3">Fleet Assignment</h5>
 
-                <div class="mb-3">
-                    <span class="info-label">Assigned Driver</span>
-                    <span class="info-value">@(Model.Driver?.FullName ?? Model.Driver?.Email)</span>
-                </div>
-                <div>
+            <div class="col-md-4">
+                <div class="glass-card">
+                    <div class="section-icon"><i class="bi bi-car-front-fill"></i></div>
+                    <h5 class="text-white fw-700 mb-3">Fleet Assignment</h5>
+                    <div class="mb-3">
+                        <span class="info-label">Assigned Driver</span>
+                        <span class="info-value">@(Model.Driver?.FullName ?? Model.Driver?.Email)</span>
+                    </div>
+                 <div>
                     <span class="info-label">Vehicle Registration</span>
                     <span class="info-value text-uppercase">@Model.RequestedVehicle?.VehicleNo</span>
-                    <span class="badge bg-secondary ms-1" style="font-size: 0.6rem;">@Model.RequestedVehicle?.VehicleType.Name</span>
-                </div>
+                    <span class="badge bg-secondary ms-1" style="font-size: 0.6rem;">@Model.RequestedVehicle?.VehicleType?.Name</span>
+                </div> 
                 <div>
                     <span class="info-label">Sent Vehicle</span>
                     <span class="info-value text-uppercase">@Model.SentVehicle?.VehicleNo</span>
-                    <span class="badge bg-secondary ms-1" style="font-size: 0.6rem;">@Model.SentVehicle?.VehicleType.Name</span>
+                    <span class="badge bg-secondary ms-1" style="font-size: 0.6rem;">@Model.SentVehicle?.VehicleType?.Name</span>
                 </div>
 
+                </div>
             </div>
-        </div>
 
         <div class="col-md-6">
             <div class="glass-card">
@@ -197,7 +196,7 @@
             </div>
         </div>
 
-        <div class="col-md-6">
+                <div class="col-md-6">
             <div class="glass-card border-primary border-opacity-25">
                 <div class="section-icon" style="color:#10b981; background: rgba(16, 185, 129, 0.1);"><i class="bi bi-lightning-fill"></i></div>
                 <h5 class="text-white fw-700 mb-3">Live Progress & Final Bill</h5>
@@ -242,5 +241,9 @@
                 </div>
             </div>
         </div>
-    </div>
+
+
+        </div>
+
+
 </div>

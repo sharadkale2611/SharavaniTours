@@ -1,0 +1,287 @@
+﻿@model SharavaniTours.Models.ViewModels.DashboardVM
+
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="container-fluid">
+
+    <!-- PAGE TITLE -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="fw-bold mb-1">Dashboard</h3>
+            <p class="text-muted mb-0">
+                Welcome to Sharavani Tours Admin Panel
+            </p>
+        </div>
+    </div>
+
+    <!-- SUMMARY CARDS -->
+    <div class="row g-4">
+
+        <!-- TOTAL TRIPS -->
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm dashboard-card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <p class="text-muted mb-1">Total Trips</p>
+                            <h3 class="fw-bold">@Model.TotalTrips</h3>
+                        </div>
+
+                        <div class="icon-box bg-primary">
+                            <i class="bi bi-car-front-fill"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- COMPLETED -->
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm dashboard-card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <p class="text-muted mb-1">Completed Trips</p>
+                            <h3 class="fw-bold text-success">
+                                @Model.CompletedTrips
+                            </h3>
+                        </div>
+
+                        <div class="icon-box bg-success">
+                            <i class="bi bi-check-circle-fill"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PENDING -->
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm dashboard-card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <p class="text-muted mb-1">Pending Trips</p>
+                            <h3 class="fw-bold text-warning">
+                                @Model.PendingTrips
+                            </h3>
+                        </div>
+
+                        <div class="icon-box bg-warning">
+                            <i class="bi bi-clock-fill"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CANCELLED -->
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm dashboard-card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <p class="text-muted mb-1">Cancelled Trips</p>
+                            <h3 class="fw-bold text-danger">
+                                @Model.CancelledTrips
+                            </h3>
+                        </div>
+
+                        <div class="icon-box bg-danger">
+                            <i class="bi bi-x-circle-fill"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- BILL SUMMARY -->
+    <div class="row mt-4 g-4">
+
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm dashboard-card">
+                <div class="card-body">
+
+                    <h5 class="fw-bold mb-3">Total Billing</h5>
+
+                    <h2 class="fw-bold text-primary">
+                        ₹ @Model.TotalBillAmount.ToString("N0")
+                    </h2>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm dashboard-card">
+                <div class="card-body">
+
+                    <h5 class="fw-bold mb-3">Received Amount</h5>
+
+                    <h2 class="fw-bold text-success">
+                        ₹ @Model.TotalReceivedAmount.ToString("N0")
+                    </h2>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm dashboard-card">
+                <div class="card-body">
+
+                    <h5 class="fw-bold mb-3">Pending Amount</h5>
+
+                    <h2 class="fw-bold text-danger">
+                        ₹ @Model.PendingAmount.ToString("N0")
+                    </h2>
+
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+    <!-- BILL STATUS SUMMARY -->
+    <div class="row mt-4 g-4">
+
+        <!-- TOTAL BILLS -->
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm dashboard-card">
+                <div class="card-body">
+
+                    <div class="d-flex justify-content-between align-items-center">
+
+                        <div>
+                            <p class="text-muted mb-1">Total Bills</p>
+
+                            <h3 class="fw-bold">
+                                @Model.TotalBills
+                            </h3>
+                        </div>
+
+                        <div class="icon-box bg-primary">
+                            <i class="bi bi-receipt"></i>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- COMPLETED BILLS -->
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm dashboard-card">
+                <div class="card-body">
+
+                    <div class="d-flex justify-content-between align-items-center">
+
+                        <div>
+                            <p class="text-muted mb-1">Completed Bills</p>
+
+                            <h3 class="fw-bold text-success">
+                                @Model.CompletedBills
+                            </h3>
+                        </div>
+
+                        <div class="icon-box bg-success">
+                            <i class="bi bi-check2-square"></i>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- PENDING BILLS -->
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm dashboard-card">
+                <div class="card-body">
+
+                    <div class="d-flex justify-content-between align-items-center">
+
+                        <div>
+                            <p class="text-muted mb-1">Pending Bills</p>
+
+                            <h3 class="fw-bold text-danger">
+                                @Model.PendingBills
+                            </h3>
+                        </div>
+
+                        <div class="icon-box bg-danger">
+                            <i class="bi bi-hourglass-split"></i>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+    <!-- OTHER SUMMARY -->
+    <div class="row mt-4 g-4">
+
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm dashboard-card">
+                <div class="card-body text-center">
+                    <h5 class="text-muted">Clients</h5>
+                    <h2 class="fw-bold">@Model.TotalClients</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm dashboard-card">
+                <div class="card-body text-center">
+                    <h5 class="text-muted">Vehicles</h5>
+                    <h2 class="fw-bold">@Model.TotalVehicles</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm dashboard-card">
+                <div class="card-body text-center">
+                    <h5 class="text-muted">Drivers</h5>
+                    <h2 class="fw-bold">@Model.TotalDrivers</h2>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<style>
+
+    .dashboard-card {
+        border-radius: 16px;
+        transition: 0.3s;
+    }
+
+        .dashboard-card:hover {
+            transform: translateY(-4px);
+        }
+
+    .icon-box {
+        width: 55px;
+        height: 55px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 22px;
+    }
+
+</style>

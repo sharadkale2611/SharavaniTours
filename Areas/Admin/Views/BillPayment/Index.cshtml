@@ -1,0 +1,368 @@
+﻿@model IEnumerable<SharavaniTours.Models.BillPayment>
+
+@using SharavaniTours.Models
+
+@{
+    ViewData["Title"] = "Bill Payments";
+}
+
+<style>
+
+    .text-green-yellow{
+        color:greenyellow !important;
+    }
+
+    .table-glass {
+        color: #e2e8f0;
+        vertical-align: middle;
+        background: rgba(238, 238, 238, 0.07);
+    }
+
+        .table-glass thead th {
+            background: linear-gradient( 180deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.9) 100% );
+            color: #3b82f6;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.7rem;
+            letter-spacing: 1px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.05);
+            padding: 12px 10px;
+        }
+
+        .table-glass td {
+            padding: 12px 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            background: transparent;
+            font-size: 0.9rem;
+        }
+
+    .badge-status {
+        padding: 5px 10px;
+        border-radius: 6px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+    }
+
+    .status-pending {
+        background: rgba(245, 158, 11, 0.15);
+        color: #f59e0b;
+        border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+
+    .status-partial {
+        background: rgba(59, 130, 246, 0.15);
+        color: #3b82f6;
+        border: 1px solid rgba(59, 130, 246, 0.3);
+    }
+
+    .status-paid {
+        background: rgba(16, 185, 129, 0.15);
+        color: #10b981;
+        border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .status-cancelled {
+        background: rgba(239, 68, 68, 0.15);
+        color: #ef4444;
+        border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+
+    .action-btn {
+        width: 32px;
+        height: 32px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        text-decoration: none !important;
+        border: none;
+        transition: all 0.2s;
+    }
+
+    .btn-view {
+        background: rgba(148, 163, 184, 0.1);
+        color: #94a3b8;
+    }
+
+        .btn-view:hover {
+            background: #94a3b8;
+            color: #fff;
+        }
+
+    .btn-edit {
+        background: rgba(59, 130, 246, 0.1);
+        color: #3b82f6;
+    }
+
+        .btn-edit:hover {
+            background: #3b82f6;
+            color: #fff;
+        }
+
+    .btn-delete {
+        background: rgba(239, 68, 68, 0.1);
+        color: #ef4444;
+    }
+
+        .btn-delete:hover {
+            background: #ef4444;
+            color: #fff;
+        }
+
+    .text-slate-light {
+        color: #94a3b8 !important;
+    }
+
+</style>
+
+<div class="d-flex justify-content-between
+    align-items-center mb-4">
+
+    <div>
+
+        <h2 class="fw-bold text-white mb-1">
+            💳 Bill Payments
+        </h2>
+
+        <p class="text-slate-light mb-0">
+            Manage agency billing & payment tracking
+        </p>
+
+    </div>
+
+    <!-- FILTER -->
+
+    <form method="get"
+          asp-action="Index"
+          class="d-flex gap-2">
+
+        <select name="status"
+                class="form-select"
+                style="
+            min-width: 180px;
+            background: rgba(15,23,42,0.8);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.1);
+            ">
+
+            <option value="">
+                All Status
+            </option>
+
+            @foreach (var item in Enum.GetValues(typeof(BillPaymentStatus)))
+            {
+                <option value="@item"
+                        selected="@(ViewBag.SelectedStatus?.ToString() == item.ToString())">
+
+                    @item
+
+                </option>
+            }
+
+        </select>
+
+        <button type="submit"
+                class="btn btn-primary">
+
+            Filter
+
+        </button>
+
+    </form>
+
+</div>
+
+
+<div class="table-responsive">
+
+    <table class="table table-glass">
+
+        <thead>
+
+            <tr>
+
+                <th>Bill No</th>
+
+                <th>Duty Slip</th>
+
+                <th>Vehicle</th>
+
+                <th>Location</th>
+
+                <th>Amount</th>
+
+                <th>Toll/Parking</th>
+
+                <th>Final</th>
+
+                <th>Status</th>
+
+                <th>Payment Date</th>
+
+                <th>Date</th>
+
+                <th class="text-end">Actions</th>
+
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            @foreach (var b in Model)
+            {
+                <tr>
+
+                    <td class="fw-bold text-white">
+                        @b.BillNo
+                    </td>
+
+                    <td class="text-green-yellow">
+                        @b.DutySlipNo
+                    </td>
+
+                    <td>
+
+                        <div class="d-flex flex-column">
+
+                            <span class="text-white">
+                                @b.VehicleNo
+                            </span>
+
+                            <small class="text-slate-light">
+                                @b.VehicleType
+                            </small>
+
+                        </div>
+
+                    </td>
+
+                    <td class="text-green-yellow">
+                        @b.Location
+                    </td>
+
+                    <td class="fw-bold text-info">
+                        ₹@b.Amount
+                    </td>
+
+                    <td class="text-green-yellow">
+                        ₹@b.TollParkingAmount
+                    </td>
+
+                    <td class="fw-bold text-success">
+                        ₹@b.FinalAmount
+                    </td>
+
+                    <td>
+
+                        @if (b.PaymentStatus
+                       == BillPaymentStatus.Pending)
+                        {
+                            <span class="badge-status
+                                status-pending">
+
+                                Pending
+
+                            </span>
+                        }
+                        else if (b.PaymentStatus
+                        == BillPaymentStatus.Partial)
+                        {
+                            <span class="badge-status
+                                status-partial">
+
+                                Partial
+
+                            </span>
+                        }
+                        else if (b.PaymentStatus
+                        == BillPaymentStatus.Paid)
+                        {
+                            <span class="badge-status
+                                status-paid">
+
+                                Paid
+
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="badge-status
+                                status-cancelled">
+
+                                Cancelled
+
+                            </span>
+                        }
+
+                    </td>
+
+                    <td class="text-green-yellow">
+
+                        @(b.PaymentDate?.ToString(
+                            "dd MMM yyyy"
+                        ) ?? "-")
+
+                    </td>
+
+                    <td class="text-slate-light">
+
+                        @b.CreatedAt.ToString(
+                            "dd MMM yyyy"
+                        )
+
+                    </td>
+
+                    <td class="text-end">
+
+                        <div class="d-flex
+                            justify-content-end
+                            gap-1">
+
+                            <a asp-action="Details"
+                                   asp-route-id="@b.Id"
+                                   class="action-btn btn-view">
+
+                                <i class="bi bi-eye"></i>
+
+                            </a>
+
+                            <a asp-action="Edit"
+                                   asp-route-id="@b.Id"
+                                   class="action-btn btn-edit">
+
+                                <i class="bi bi-pencil"></i>
+
+                            </a>
+
+                            <form asp-action="Delete"
+                                  asp-route-id="@b.Id"
+                                  method="post"
+                                  style="display:inline;">
+
+                                <button type="submit"
+                                        class="action-btn
+                                    btn-delete"
+                                        onclick="return confirm(
+                                    'Delete this bill?'
+                                    )">
+
+                                    <i class="bi bi-trash"></i>
+
+                                </button>
+
+                            </form>
+
+                        </div>
+
+                    </td>
+
+                </tr>
+            }
+
+        </tbody>
+
+    </table>
+
+</div>
